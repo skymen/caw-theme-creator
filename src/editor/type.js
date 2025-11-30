@@ -611,6 +611,11 @@ function addDialogStyles() {
       z-index: 10000;
       display: flex;
       flex-direction: column;
+      overflow: visible;
+    }
+
+    .theme-dialog-container > .theme-dialog-header,
+    .theme-dialog-container > .theme-dialog-tabs-content {
       overflow: hidden;
     }
 
@@ -736,70 +741,70 @@ function addDialogStyles() {
 
     .theme-dialog-resize-handle {
       position: absolute;
-      z-index: 1;
+      z-index: 10;
     }
 
     /* Edge handles */
     .resize-top {
-      top: -10px;
+      top: -5px;
       left: 0;
       right: 0;
-      height: 20px;
+      height: 10px;
       cursor: ns-resize;
     }
 
     .resize-bottom {
-      bottom: -10px;
+      bottom: -5px;
       left: 0;
       right: 0;
-      height: 20px;
+      height: 10px;
       cursor: ns-resize;
     }
 
     .resize-left {
       top: 0;
       bottom: 0;
-      left: -10px;
-      width: 20px;
+      left: -5px;
+      width: 10px;
       cursor: ew-resize;
     }
 
     .resize-right {
       top: 0;
       bottom: 0;
-      right: -10px;
-      width: 20px;
+      right: -5px;
+      width: 10px;
       cursor: ew-resize;
     }
 
     /* Corner handles */
     .resize-top-left {
-      top: 0;
-      left: 0;
+      top: -10px;
+      left: -10px;
       width: 20px;
       height: 20px;
       cursor: nwse-resize;
     }
 
     .resize-top-right {
-      top: 0;
-      right: 0;
+      top: -10px;
+      right: -10px;
       width: 20px;
       height: 20px;
       cursor: nesw-resize;
     }
 
     .resize-bottom-left {
-      bottom: 0;
-      left: 0;
+      bottom: -10px;
+      left: -10px;
       width: 20px;
       height: 20px;
       cursor: nesw-resize;
     }
 
     .resize-bottom-right {
-      bottom: 0;
-      right: 0;
+      bottom: -10px;
+      right: -10px;
       width: 20px;
       height: 20px;
       cursor: nwse-resize;

@@ -178,6 +178,12 @@ const DialogManager = {
 
       document.body.appendChild(container);
 
+      // Center the container initially
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      container.style.left = Math.max(0, (viewportWidth - 600) / 2) + "px";
+      container.style.top = Math.max(0, (viewportHeight - 400) / 2) + "px";
+
       // Setup controls
       container.querySelector(".close-btn").addEventListener("click", () => {
         this.closeActiveWindow();
@@ -541,40 +547,26 @@ const DialogManager = {
       const deltaX = e.clientX - startX;
       const deltaY = e.clientY - startY;
 
-      let newWidth = startWidth;
-      let newHeight = startHeight;
-      let newLeft = startLeft;
-      let newTop = startTop;
-
       // Handle horizontal resizing
       if (resizeDirection.includes("right")) {
-        newWidth = startWidth + deltaX;
+        const newWidth = Math.max(minWidth, startWidth + deltaX);
+        container.style.width = newWidth + "px";
       } else if (resizeDirection.includes("left")) {
-        newWidth = startWidth - deltaX;
-        newLeft = startLeft + deltaX;
+        const newWidth = Math.max(minWidth, startWidth - deltaX);
+        const widthDiff = startWidth - newWidth;
+        container.style.width = newWidth + "px";
+        container.style.left = startLeft + widthDiff + "px";
       }
 
       // Handle vertical resizing
       if (resizeDirection.includes("bottom")) {
-        newHeight = startHeight + deltaY;
-      } else if (resizeDirection.includes("top")) {
-        newHeight = startHeight - deltaY;
-        newTop = startTop + deltaY;
-      }
-
-      // Apply constraints and update
-      if (newWidth >= minWidth) {
-        container.style.width = newWidth + "px";
-        if (resizeDirection.includes("left")) {
-          container.style.left = newLeft + "px";
-        }
-      }
-
-      if (newHeight >= minHeight) {
+        const newHeight = Math.max(minHeight, startHeight + deltaY);
         container.style.height = newHeight + "px";
-        if (resizeDirection.includes("top")) {
-          container.style.top = newTop + "px";
-        }
+      } else if (resizeDirection.includes("top")) {
+        const newHeight = Math.max(minHeight, startHeight - deltaY);
+        const heightDiff = startHeight - newHeight;
+        container.style.height = newHeight + "px";
+        container.style.top = startTop + heightDiff + "px";
       }
     };
 
@@ -610,9 +602,6 @@ function addDialogStyles() {
   style.textContent = `
     .theme-dialog-container {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       width: 600px;
       height: 400px;
       background: #2a2a2a;
@@ -623,7 +612,6 @@ function addDialogStyles() {
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      will-change: transform;
     }
 
     .theme-dialog-header {

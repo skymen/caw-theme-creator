@@ -741,34 +741,34 @@ function addDialogStyles() {
 
     /* Edge handles */
     .resize-top {
-      top: 0;
+      top: -10px;
       left: 0;
       right: 0;
-      height: 5px;
+      height: 20px;
       cursor: ns-resize;
     }
 
     .resize-bottom {
-      bottom: 0;
+      bottom: -10px;
       left: 0;
       right: 0;
-      height: 5px;
+      height: 20px;
       cursor: ns-resize;
     }
 
     .resize-left {
       top: 0;
       bottom: 0;
-      left: 0;
-      width: 5px;
+      left: -10px;
+      width: 20px;
       cursor: ew-resize;
     }
 
     .resize-right {
       top: 0;
       bottom: 0;
-      right: 0;
-      width: 5px;
+      right: -10px;
+      width: 20px;
       cursor: ew-resize;
     }
 
@@ -776,24 +776,24 @@ function addDialogStyles() {
     .resize-top-left {
       top: 0;
       left: 0;
-      width: 10px;
-      height: 10px;
+      width: 20px;
+      height: 20px;
       cursor: nwse-resize;
     }
 
     .resize-top-right {
       top: 0;
       right: 0;
-      width: 10px;
-      height: 10px;
+      width: 20px;
+      height: 20px;
       cursor: nesw-resize;
     }
 
     .resize-bottom-left {
       bottom: 0;
       left: 0;
-      width: 10px;
-      height: 10px;
+      width: 20px;
+      height: 20px;
       cursor: nesw-resize;
     }
 

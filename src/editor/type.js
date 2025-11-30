@@ -96,6 +96,7 @@ const DialogManager = {
   init() {
     addDialogStyles();
     this.createMinimizedDock();
+    this.setupWindowResizeListener();
   },
 
   createMinimizedDock() {
@@ -105,6 +106,18 @@ const DialogManager = {
     this.minimizedDock.className = "theme-minimized-dock";
     this.minimizedDock.style.display = "none";
     document.body.appendChild(this.minimizedDock);
+  },
+
+  setupWindowResizeListener() {
+    if (this.resizeListenerAdded) return;
+    this.resizeListenerAdded = true;
+
+    window.addEventListener("resize", () => {
+      const container = document.querySelector(".theme-dialog-container");
+      if (container && container.style.display !== "none") {
+        this.constrainToViewport(container);
+      }
+    });
   },
 
   createWindow({ id, title, content, onInit }) {
@@ -484,14 +497,28 @@ const DialogManager = {
       const deltaX = e.clientX - startX;
       const deltaY = e.clientY - startY;
 
-      container.style.left = startLeft + deltaX + "px";
-      container.style.top = startTop + deltaY + "px";
+      let newLeft = startLeft + deltaX;
+      let newTop = startTop + deltaY;
+
+      // Constrain to viewport
+      const minVisible = 50; // Minimum pixels that must remain visible
+      const maxLeft = window.innerWidth - minVisible;
+      const maxTop = window.innerHeight - minVisible;
+      const minLeft = -container.offsetWidth + minVisible;
+      const minTop = 0;
+
+      newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+      newTop = Math.max(minTop, Math.min(newTop, maxTop));
+
+      container.style.left = newLeft + "px";
+      container.style.top = newTop + "px";
     };
 
     const onMouseUp = () => {
       if (isDragging) {
         isDragging = false;
         header.style.cursor = "grab";
+        this.constrainToViewport(container);
       }
     };
 
@@ -546,31 +573,75 @@ const DialogManager = {
 
       const deltaX = e.clientX - startX;
       const deltaY = e.clientY - startY;
+      const edgeMargin = 50; // Keep this much space visible for dragging
 
       // Handle horizontal resizing
       if (resizeDirection.includes("right")) {
-        const newWidth = Math.max(minWidth, startWidth + deltaX);
+        let newWidth = Math.max(minWidth, startWidth + deltaX);
+
+        // Constrain so right edge of window doesn't go past left edge of viewport
+        // Right edge position = startLeft + newWidth
+        // Keep at least edgeMargin visible
+        const minRightEdge = edgeMargin;
+        if (startLeft + newWidth < minRightEdge) {
+          newWidth = minRightEdge - startLeft;
+        }
+
         container.style.width = newWidth + "px";
       } else if (resizeDirection.includes("left")) {
-        const newWidth = Math.max(minWidth, startWidth - deltaX);
+        let newWidth = Math.max(minWidth, startWidth - deltaX);
         const widthDiff = startWidth - newWidth;
+        let newLeft = startLeft + widthDiff;
+
+        // Constrain so left edge of window doesn't go past right edge of viewport
+        // Left edge position = newLeft
+        // Keep at least edgeMargin visible
+        const maxLeftEdge = window.innerWidth - edgeMargin;
+        if (newLeft > maxLeftEdge) {
+          newLeft = maxLeftEdge;
+          newWidth = startLeft + startWidth - maxLeftEdge;
+        }
+
         container.style.width = newWidth + "px";
-        container.style.left = startLeft + widthDiff + "px";
+        container.style.left = newLeft + "px";
       }
 
       // Handle vertical resizing
       if (resizeDirection.includes("bottom")) {
-        const newHeight = Math.max(minHeight, startHeight + deltaY);
+        let newHeight = Math.max(minHeight, startHeight + deltaY);
+
+        // Constrain so bottom edge of window doesn't go past top edge of viewport
+        // Bottom edge position = startTop + newHeight
+        // Keep at least edgeMargin visible
+        const minBottomEdge = edgeMargin;
+        if (startTop + newHeight < minBottomEdge) {
+          newHeight = minBottomEdge - startTop;
+        }
+
         container.style.height = newHeight + "px";
       } else if (resizeDirection.includes("top")) {
-        const newHeight = Math.max(minHeight, startHeight - deltaY);
+        let newHeight = Math.max(minHeight, startHeight - deltaY);
         const heightDiff = startHeight - newHeight;
+        let newTop = startTop + heightDiff;
+
+        // Constrain so top edge of window doesn't go past bottom edge of viewport
+        // Top edge position = newTop
+        // Keep at least edgeMargin visible
+        const maxTopEdge = window.innerHeight - edgeMargin;
+        if (newTop > maxTopEdge) {
+          newTop = maxTopEdge;
+          newHeight = startTop + startHeight - maxTopEdge;
+        }
+
         container.style.height = newHeight + "px";
-        container.style.top = startTop + heightDiff + "px";
+        container.style.top = newTop + "px";
       }
     };
 
     const onMouseUp = () => {
+      if (isResizing) {
+        this.constrainToViewport(container);
+      }
       isResizing = false;
       resizeDirection = null;
     };
@@ -588,6 +659,44 @@ const DialogManager = {
     const handle = document.createElement("div");
     handle.className = `theme-dialog-resize-handle resize-${direction}`;
     return handle;
+  },
+
+  constrainToViewport(container) {
+    const minVisible = 50; // Minimum pixels that must remain visible
+    const rect = container.getBoundingClientRect();
+
+    let newLeft = container.offsetLeft;
+    let newTop = container.offsetTop;
+    let needsUpdate = false;
+
+    // Check right edge
+    if (rect.left > window.innerWidth - minVisible) {
+      newLeft = window.innerWidth - minVisible;
+      needsUpdate = true;
+    }
+
+    // Check left edge
+    if (rect.right < minVisible) {
+      newLeft = minVisible - container.offsetWidth;
+      needsUpdate = true;
+    }
+
+    // Check bottom edge
+    if (rect.top > window.innerHeight - minVisible) {
+      newTop = window.innerHeight - minVisible;
+      needsUpdate = true;
+    }
+
+    // Check top edge (never go above 0)
+    if (rect.top < 0) {
+      newTop = 0;
+      needsUpdate = true;
+    }
+
+    if (needsUpdate) {
+      container.style.left = newLeft + "px";
+      container.style.top = newTop + "px";
+    }
   },
 };
 

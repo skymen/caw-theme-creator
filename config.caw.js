@@ -7,8 +7,8 @@ import {
 import _version from "./version.js";
 export const addonType = ADDON_TYPE.PLUGIN;
 export const type = PLUGIN_TYPE.OBJECT;
-export const id = "sample_addon";
-export const name = "Sample Addon";
+export const id = "caw_theme_creator";
+export const name = "CAW Theme Creator";
 export const version = _version;
 export const minConstructVersion = undefined;
 export const author = "skymen";
@@ -40,7 +40,7 @@ export const info = {
   // defaultImageUrl: "default-image.png",
   Set: {
     // COMMON to all
-    CanBeBundled: true,
+    CanBeBundled: false,
     IsDeprecated: false,
     GooglePlayServicesEnabled: false,
 

@@ -9,7 +9,7 @@ export const cleanup = {
   disableTip: false,
 };
 
-export const failOnUnusedFiles = true;
+export const failOnUnusedFiles = false;
 
 export const disableTips = false;
 

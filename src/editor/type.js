@@ -65,14 +65,14 @@ function addThemeMenuItem(menu) {
 }
 
 function dialogManagerIsAvailable() {
-  return !!globalThis.SDKExtensions.EditorDialogManager;
+  return !!globalThis?.SDKExtensions?.EditorDialogManager ?? false;
 }
 
 function openThemeEditorDialog() {
   if (!dialogManagerIsAvailable()) {
     if (
       confirm(
-        "The Theme Editor requires the Editor Window Manager to be available. Install now?"
+        "The Theme Editor requires the Editor Window Manager to be available. Open download page?"
       )
     ) {
       // open the link to install Editor Window Manager: https://github.com/skymen/editor-window-manager

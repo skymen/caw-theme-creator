@@ -2,14 +2,25 @@
 import JSZip from "jszip";
 
 export function createThemeProject(initialCss = "") {
+  // Try to auto-detect author from userAccountName span
+  let authorName = "";
+  try {
+    const userAccountSpan = document.getElementById("userAccountName");
+    if (userAccountSpan && userAccountSpan.textContent.trim()) {
+      authorName = userAccountSpan.textContent.trim();
+    }
+  } catch (error) {
+    console.warn("Could not detect user account name:", error);
+  }
+
   return {
     name: "New Theme",
     id: "NewTheme",
     version: "1.0.0.0",
-    author: "",
-    website: "",
-    documentation: "",
-    description: "",
+    author: authorName,
+    website: "https://www.construct.net",
+    documentation: "https://www.construct.net",
+    description: "A custom theme for Construct 3",
     stylesheets: [
       {
         name: "theme.css",
@@ -69,14 +80,27 @@ export async function loadThemeFromZip(file) {
     });
   }
 
+  // Try to auto-detect author if not set
+  let authorName = addonJson.author || "";
+  if (!authorName) {
+    try {
+      const userAccountSpan = document.getElementById("userAccountName");
+      if (userAccountSpan && userAccountSpan.textContent.trim()) {
+        authorName = userAccountSpan.textContent.trim();
+      }
+    } catch (error) {
+      console.warn("Could not detect user account name:", error);
+    }
+  }
+
   return {
     name: addonJson.name || "Unnamed Theme",
     id: addonJson.id || "UnnamedTheme",
     version: addonJson.version || "1.0.0.0",
-    author: addonJson.author || "",
-    website: addonJson.website || "",
-    documentation: addonJson.documentation || "",
-    description: addonJson.description || "",
+    author: authorName,
+    website: addonJson.website || "https://www.construct.net",
+    documentation: addonJson.documentation || "https://www.construct.net",
+    description: addonJson.description || "A custom theme for Construct 3",
     stylesheets,
   };
 }
@@ -114,7 +138,7 @@ export async function saveThemeToZip(project, fileSystemHandle = null) {
 
   // Add default icon.svg
   const defaultIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <rect width="100" height="100" fill="#4a9eff"/>
+    <rect width="100" height="100" fill="var(--turquoise, #29f3d0)"/>
     <text x="50" y="50" font-size="48" text-anchor="middle" dominant-baseline="middle" fill="white">T</text>
   </svg>`;
   zip.file("icon.svg", defaultIcon);

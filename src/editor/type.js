@@ -88,24 +88,24 @@ function openTestWindow() {
   const content = `
     <div style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
       <div style="background: #333; padding: 15px; border-radius: 8px;">
-        <h3 style="margin: 0 0 10px 0; color: #4a9eff;">Window Information</h3>
+        <h3 style="margin: 0 0 10px 0; color: var(--turquoise, #29f3d0);">Window Information</h3>
         <p style="margin: 5px 0; color: #aaa;">Window ID: <strong style="color: #fff;">${windowId}</strong></p>
         <p style="margin: 5px 0; color: #aaa;">Created: <strong style="color: #fff;">${new Date().toLocaleString()}</strong></p>
       </div>
       
       <div style="background: #333; padding: 15px; border-radius: 8px;">
-        <h3 style="margin: 0 0 10px 0; color: #4a9eff;">Rename Window</h3>
+        <h3 style="margin: 0 0 10px 0; color: var(--turquoise, #29f3d0);">Rename Window</h3>
         <div style="display: flex; gap: 10px; align-items: center;">
           <input 
             type="text" 
             id="title-input-${windowId}" 
             value="${windowState.customTitle}"
-            style="flex: 1; padding: 8px; background: #1a1a1a; border: 1px solid #555; border-radius: 4px; color: #fff; font-size: 14px;"
+            style="flex: 1; padding: 8px; background: transparent; border: 1px solid #555; border-radius: 4px; color: #fff; font-size: 14px;"
             placeholder="Enter window title"
           />
           <button 
             id="rename-btn-${windowId}"
-            style="padding: 8px 16px; background: #4a9eff; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-weight: 500;"
+            style="padding: 8px 16px; background: var(--turquoise, #29f3d0); border: none; border-radius: 4px; color: #fff; cursor: pointer; font-weight: 500;"
           >
             Rename
           </button>
@@ -113,7 +113,7 @@ function openTestWindow() {
       </div>
       
       <div style="background: #333; padding: 15px; border-radius: 8px;">
-        <h3 style="margin: 0 0 10px 0; color: #4a9eff;">State Counter</h3>
+        <h3 style="margin: 0 0 10px 0; color: var(--turquoise, #29f3d0);">State Counter</h3>
         <div style="display: flex; gap: 10px; align-items: center;">
           <button 
             id="decrement-btn-${windowId}"
@@ -123,7 +123,7 @@ function openTestWindow() {
           </button>
           <div 
             id="counter-display-${windowId}"
-            style="flex: 1; text-align: center; font-size: 24px; font-weight: bold; color: #fff; background: #1a1a1a; padding: 10px; border-radius: 4px;"
+            style="flex: 1; text-align: center; font-size: 24px; font-weight: bold; color: #fff; background: transparent; padding: 10px; border-radius: 4px;"
           >
             ${windowState.counter}
           </div>
@@ -140,7 +140,7 @@ function openTestWindow() {
       </div>
       
       <div style="background: #333; padding: 15px; border-radius: 8px;">
-        <h3 style="margin: 0 0 10px 0; color: #4a9eff;">Actions</h3>
+        <h3 style="margin: 0 0 10px 0; color: var(--turquoise, #29f3d0);">Actions</h3>
         <button 
           id="reset-btn-${windowId}"
           style="width: 100%; padding: 10px; background: #ff9800; border: none; border-radius: 4px; color: #fff; cursor: pointer; font-weight: 500;"

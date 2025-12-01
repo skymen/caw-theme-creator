@@ -19,6 +19,38 @@ let fileSystemHandle = null;
 const STORAGE_KEY_PROJECT = "theme-editor-project";
 const STORAGE_KEY_HANDLE = "theme-editor-file-handle";
 
+// Theme Editor Color Variables
+// Customize these to change the theme editor's appearance
+const THEME_COLORS = {
+  // Primary colors
+  primary: "var(--turquoise, #29f3d0)",
+  secondary: "var(--blue, #38e1ff)",
+  success: "var(--green, #3ff276)",
+  danger: "var(--red, #ff465f)",
+
+  // Backgrounds
+  bgDarkest: "var(--gray9, #474747)",
+  bgDarker: "var(--gray11, #575757)",
+  bgDark: "var(--gray13, #696969)",
+  bgMedium: "var(--gray15, #787878)",
+
+  // Borders
+  borderDark: "var(--gray5, #292929)",
+  borderMedium: "var(--gray9, #474747)",
+  borderLight: "var(--gray11, #575757)",
+
+  // Text
+  textPrimary: "var(--gray32, #fff)",
+  textSecondary: "var(--gray21, #a8a8a8)",
+  textOnPrimary: "var(--gray0, #000)",
+
+  // Interactive states
+  hoverBg: "var(--gray9, #474747)",
+  inputBg: "var(--gray9, #474747)",
+  inputBorder: "var(--gray9, #474747)",
+  inputBorderFocus: "var(--gray11, #575757)",
+};
+
 export function openThemeEditorDialog() {
   const DialogManager = globalThis.SDKExtensions.EditorDialogManager;
 
@@ -51,14 +83,13 @@ export function openThemeEditorDialog() {
 
 function createInitialContent() {
   return `
-    <div id="theme-editor-root" style="width: 100%; height: 100%; display: flex; flex-direction: column; background: transparent; color: #fff; font-size: 13px;">
+    <div id="theme-editor-root" style="width: 100%; height: 100%; display: flex; flex-direction: column; background: transparent; color: ${THEME_COLORS.textPrimary}; font-size: 13px;">
       <div id="theme-editor-welcome" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-        <h3 style="margin-bottom: 15px; color: var(--turquoise, #29f3d0); font-size: 16px;">Create or Open Theme</h3>
         <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-          <button id="btn-new-theme" style="padding: 8px 16px; background: var(--turquoise, #29f3d0); border: none; border-radius: 3px; color: #fff; cursor: pointer; font-size: 13px;">
+          <button id="btn-new-theme" style="padding: 8px 16px; background: ${THEME_COLORS.primary}; border: none; border-radius: 3px; color: ${THEME_COLORS.textOnPrimary}; cursor: pointer; font-size: 13px;">
             New Theme
           </button>
-          <button id="btn-open-theme" style="padding: 8px 16px; background: #2d7dd2; border: none; border-radius: 3px; color: #fff; cursor: pointer; font-size: 13px;">
+          <button id="btn-open-theme" style="padding: 8px 16px; background: ${THEME_COLORS.secondary}; border: none; border-radius: 3px; color: ${THEME_COLORS.textOnPrimary}; cursor: pointer; font-size: 13px;">
             Open .c3addon
           </button>
         </div>
@@ -101,30 +132,30 @@ async function showNewThemeDialog(dialogElement) {
 
   const newThemeDialog = `
     <div style="flex: 1; display: flex; flex-direction: column; padding: 15px; overflow: auto;">
-      <h3 style="margin: 0 0 10px 0; color: var(--turquoise, #29f3d0); font-size: 14px;">Choose Starting Point</h3>
+      <h3 style="margin: 0 0 10px 0; color: ${THEME_COLORS.primary}; font-size: 14px;">Choose Starting Point</h3>
       <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-        <button class="template-btn" data-template="empty" style="padding: 10px; background: #333; border: 1px solid #555; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px; text-align: center;">
+        <button class="template-btn" data-template="empty" style="padding: 10px; background: ${THEME_COLORS.bgDark}; border: 1px solid ${THEME_COLORS.borderLight}; border-radius: 4px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; text-align: center;">
           <div style="margin-bottom: 4px;">${emptyIconSvg}</div>
           <div style="font-weight: 600; margin-bottom: 2px; font-size: 12px;">Empty</div>
-          <div style="font-size: 10px; color: #aaa;">Start from scratch</div>
+          <div style="font-size: 10px; color: ${THEME_COLORS.textSecondary};">Start from scratch</div>
         </button>
-        <button class="template-btn" data-template="dark" style="padding: 10px; background: #333; border: 1px solid #555; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px; text-align: center;">
+        <button class="template-btn" data-template="dark" style="padding: 10px; background: ${THEME_COLORS.bgDark}; border: 1px solid ${THEME_COLORS.borderLight}; border-radius: 4px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; text-align: center;">
           <div style="margin-bottom: 4px;">${darkIconSvg}</div>
           <div style="font-weight: 600; margin-bottom: 2px; font-size: 12px;">Dark</div>
-          <div style="font-size: 10px; color: #aaa;">3 files</div>
+          <div style="font-size: 10px; color: ${THEME_COLORS.textSecondary};">3 files</div>
         </button>
-        <button class="template-btn" data-template="light" style="padding: 10px; background: #333; border: 1px solid #555; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px; text-align: center;">
+        <button class="template-btn" data-template="light" style="padding: 10px; background: ${THEME_COLORS.bgDark}; border: 1px solid ${THEME_COLORS.borderLight}; border-radius: 4px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; text-align: center;">
           <div style="margin-bottom: 4px;">${lightIconSvg}</div>
           <div style="font-weight: 600; margin-bottom: 2px; font-size: 12px;">Light</div>
-          <div style="font-size: 10px; color: #aaa;">Light mode</div>
+          <div style="font-size: 10px; color: ${THEME_COLORS.textSecondary};">Light mode</div>
         </button>
-        <button class="template-btn" data-template="custom" style="padding: 10px; background: #333; border: 1px solid #555; border-radius: 4px; color: #fff; cursor: pointer; font-size: 11px; text-align: center;">
+        <button class="template-btn" data-template="custom" style="padding: 10px; background: ${THEME_COLORS.bgDark}; border: 1px solid ${THEME_COLORS.borderLight}; border-radius: 4px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; text-align: center;">
           <div style="margin-bottom: 4px;">${importIconSvg}</div>
           <div style="font-weight: 600; margin-bottom: 2px; font-size: 12px;">Import</div>
-          <div style="font-size: 10px; color: #aaa;">From .c3addon</div>
+          <div style="font-size: 10px; color: ${THEME_COLORS.textSecondary};">From .c3addon</div>
         </button>
       </div>
-      <button id="btn-back" style="margin-top: 10px; padding: 6px 12px; background: #555; border: none; border-radius: 3px; color: #fff; cursor: pointer; font-size: 12px;">
+      <button id="btn-back" style="margin-top: 10px; padding: 6px 12px; background: ${THEME_COLORS.bgDark}; border: none; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 12px;">
         ← Back
       </button>
     </div>
@@ -136,12 +167,12 @@ async function showNewThemeDialog(dialogElement) {
   const templateBtns = root.querySelectorAll(".template-btn");
   templateBtns.forEach((btn) => {
     btn.addEventListener("mouseenter", () => {
-      btn.style.borderColor = "var(--turquoise, #29f3d0)";
-      btn.style.background = "#2a2a2a";
+      btn.style.borderColor = THEME_COLORS.primary;
+      btn.style.background = THEME_COLORS.hoverBg;
     });
     btn.addEventListener("mouseleave", () => {
-      btn.style.borderColor = "#555";
-      btn.style.background = "#333";
+      btn.style.borderColor = THEME_COLORS.borderLight;
+      btn.style.background = THEME_COLORS.bgMedium;
     });
     btn.addEventListener("click", async () => {
       const template = btn.dataset.template;
@@ -228,15 +259,25 @@ function renderEditor(dialogElement) {
 
   root.innerHTML = `
     <div style="display: flex; flex-direction: column; width: 100%; height: 100%; font-size: 12px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; background: #252525; border-bottom: 1px solid transparent; padding: 4px 8px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; background: ${
+        THEME_COLORS.bgDarkest
+      }; border-bottom: 1px solid ${
+    THEME_COLORS.borderDark
+  }; padding: 4px 8px;">
         <div id="tab-bar" style="display: flex; overflow-x: auto; flex: 1;">
-          <button class="tab-btn" data-tab="info" style="padding: 6px 12px; background: var(--turquoise, #29f3d0); border: none; border-right: 1px solid transparent; color: #fff; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+          <button class="tab-btn" data-tab="info" style="padding: 6px 12px; background: ${
+            THEME_COLORS.primary
+          }; border: none; border-right: 1px solid ${
+    THEME_COLORS.borderDark
+  }; color: ${
+    THEME_COLORS.textOnPrimary
+  }; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
             ${infoIconSvg} Info
           </button>
           ${currentProject.stylesheets
             .map(
               (file, index) => `
-            <button class="tab-btn" data-tab="file-${index}" style="padding: 6px 12px; background: #333; border: none; border-right: 1px solid transparent; color: #fff; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+            <button class="tab-btn" data-tab="file-${index}" style="padding: 6px 12px; background: ${THEME_COLORS.bgMedium}; border: none; border-right: 1px solid ${THEME_COLORS.borderDark}; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
               ${fileIconSvg} ${file.name}
             </button>
           `
@@ -244,15 +285,25 @@ function renderEditor(dialogElement) {
             .join("")}
         </div>
         <div style="display: flex; gap: 4px; margin-left: 8px;">
-          <button id="btn-save" style="padding: 4px 8px; background: #4caf50; border: none; border-radius: 3px; color: #fff; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+          <button id="btn-save" style="padding: 4px 8px; background: ${
+            THEME_COLORS.success
+          }; border: none; border-radius: 3px; color: ${
+    THEME_COLORS.textOnPrimary
+  }; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
             ${saveIconSvg} Save
           </button>
-          <button id="btn-close-project" style="padding: 4px 8px; background: #f44336; border: none; border-radius: 3px; color: #fff; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+          <button id="btn-close-project" style="padding: 4px 8px; background: ${
+            THEME_COLORS.danger
+          }; border: none; border-radius: 3px; color: ${
+    THEME_COLORS.textPrimary
+  }; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
             ${closeIconSvg} Close
           </button>
         </div>
       </div>
-      <div id="tab-content" style="flex: 1; overflow: auto; background: #1e1e1e;">
+      <div id="tab-content" style="flex: 1; overflow: auto; background: ${
+        THEME_COLORS.bgDarker
+      };">
         ${renderInfoTab()}
       </div>
     </div>
@@ -269,59 +320,105 @@ function renderInfoTab() {
 
   return `
     <div style="padding: 12px;">
-      <h3 style="color: var(--turquoise, #29f3d0); margin: 0 0 10px 0; font-size: 13px;">Addon Information</h3>
+      <h3 style="color: ${
+        THEME_COLORS.primary
+      }; margin: 0 0 10px 0; font-size: 13px;">Addon Information</h3>
       
       <div style="display: flex; flex-direction: column; gap: 8px;">
         <div>
-          <label style="display: block; margin-bottom: 2px; color: #aaa; font-size: 11px;">Name</label>
+          <label style="display: block; margin-bottom: 2px; color: ${
+            THEME_COLORS.textSecondary
+          }; font-size: 11px;">Name</label>
           <input type="text" id="input-name" value="${
             currentProject.name
-          }" style="width: 100%; padding: 4px 6px; background: #2a2a2a; border: 1px solid #444; border-radius: 3px; color: #fff; font-size: 12px;">
+          }" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
+    THEME_COLORS.inputBg
+  }; border: 1px solid ${
+    THEME_COLORS.inputBorder
+  }; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; font-size: 12px;">
         </div>
         
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
           <div>
-            <label style="display: block; margin-bottom: 2px; color: #aaa; font-size: 11px;">Version</label>
+            <label style="display: block; margin-bottom: 2px; color: ${
+              THEME_COLORS.textSecondary
+            }; font-size: 11px;">Version</label>
             <input type="text" id="input-version" value="${
               currentProject.version
-            }" style="width: 100%; padding: 4px 6px; background: #2a2a2a; border: 1px solid #444; border-radius: 3px; color: #fff; font-size: 12px;">
+            }" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
+    THEME_COLORS.inputBg
+  }; border: 1px solid ${
+    THEME_COLORS.inputBorder
+  }; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; font-size: 12px;">
           </div>
           
           <div>
-            <label style="display: block; margin-bottom: 2px; color: #aaa; font-size: 11px;">Author</label>
+            <label style="display: block; margin-bottom: 2px; color: ${
+              THEME_COLORS.textSecondary
+            }; font-size: 11px;">Author</label>
             <input type="text" id="input-author" value="${
               currentProject.author
-            }" style="width: 100%; padding: 4px 6px; background: #2a2a2a; border: 1px solid #444; border-radius: 3px; color: #fff; font-size: 12px;">
+            }" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
+    THEME_COLORS.inputBg
+  }; border: 1px solid ${
+    THEME_COLORS.inputBorder
+  }; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; font-size: 12px;">
           </div>
         </div>
         
         <div>
-          <label style="display: block; margin-bottom: 2px; color: #aaa; font-size: 11px;">Website</label>
+          <label style="display: block; margin-bottom: 2px; color: ${
+            THEME_COLORS.textSecondary
+          }; font-size: 11px;">Website</label>
           <input type="url" id="input-website" value="${
             currentProject.website
-          }" style="width: 100%; padding: 4px 6px; background: #2a2a2a; border: 1px solid #444; border-radius: 3px; color: #fff; font-size: 12px;">
+          }" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
+    THEME_COLORS.inputBg
+  }; border: 1px solid ${
+    THEME_COLORS.inputBorder
+  }; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; font-size: 12px;">
         </div>
         
         <div>
-          <label style="display: block; margin-bottom: 2px; color: #aaa; font-size: 11px;">Documentation</label>
+          <label style="display: block; margin-bottom: 2px; color: ${
+            THEME_COLORS.textSecondary
+          }; font-size: 11px;">Documentation</label>
           <input type="url" id="input-documentation" value="${
             currentProject.documentation
-          }" style="width: 100%; padding: 4px 6px; background: #2a2a2a; border: 1px solid #444; border-radius: 3px; color: #fff; font-size: 12px;">
+          }" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
+    THEME_COLORS.inputBg
+  }; border: 1px solid ${
+    THEME_COLORS.inputBorder
+  }; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; font-size: 12px;">
         </div>
         
         <div>
-          <label style="display: block; margin-bottom: 2px; color: #aaa; font-size: 11px;">Description</label>
-          <textarea id="input-description" rows="2" style="width: 100%; padding: 4px 6px; background: #2a2a2a; border: 1px solid #444; border-radius: 3px; color: #fff; font-size: 12px; resize: vertical;">${
-            currentProject.description
-          }</textarea>
+          <label style="display: block; margin-bottom: 2px; color: ${
+            THEME_COLORS.textSecondary
+          }; font-size: 11px;">Description</label>
+          <textarea id="input-description" rows="2" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
+            THEME_COLORS.inputBg
+          }; border: 1px solid ${
+    THEME_COLORS.inputBorder
+  }; border-radius: 3px; color: ${
+    THEME_COLORS.textPrimary
+  }; font-size: 12px; resize: vertical;">${
+    currentProject.description
+  }</textarea>
         </div>
         
         <div>
-          <label style="display: block; margin-bottom: 4px; color: #aaa; font-size: 11px;">Files</label>
+          <label style="display: block; margin-bottom: 4px; color: ${
+            THEME_COLORS.textSecondary
+          }; font-size: 11px;">Files</label>
           <div id="file-list" style="display: flex; flex-direction: column; gap: 4px;">
             ${renderFileList()}
           </div>
-          <button id="btn-add-file" style="margin-top: 4px; padding: 4px 8px; background: var(--turquoise, #29f3d0); border: none; border-radius: 3px; color: #fff; cursor: pointer; font-size: 11px; display: flex; align-items: center; gap: 4px;">
+          <button id="btn-add-file" style="margin-top: 4px; padding: 4px 8px; background: ${
+            THEME_COLORS.primary
+          }; border: none; border-radius: 3px; color: ${
+    THEME_COLORS.textOnPrimary
+  }; cursor: pointer; font-size: 11px; display: flex; align-items: center; gap: 4px;">
             ${addIconSvg} Add
           </button>
         </div>
@@ -337,9 +434,9 @@ function renderFileList() {
   return currentProject.stylesheets
     .map(
       (file, index) => `
-    <div style="display: flex; align-items: center; gap: 4px; padding: 4px; background: #2a2a2a; border: 1px solid #444; border-radius: 3px;">
-      <input type="text" data-file-index="${index}" class="file-name-input" value="${file.name}" style="flex: 1; padding: 3px 6px; background: transparent; border: 1px solid #555; border-radius: 2px; color: #fff; font-size: 11px;">
-      <button class="btn-remove-file" data-file-index="${index}" style="padding: 3px 6px; background: #f44336; border: none; border-radius: 2px; color: #fff; cursor: pointer; font-size: 11px; display: flex; align-items: center; gap: 2px;">
+    <div style="display: flex; align-items: center; gap: 4px; padding: 4px; background: ${THEME_COLORS.inputBg}; border: 1px solid ${THEME_COLORS.inputBorder}; border-radius: 3px;">
+      <input type="text" data-file-index="${index}" class="file-name-input" value="${file.name}" style="flex: 1; padding: 3px 6px; background: transparent; border: 1px solid ${THEME_COLORS.inputBorderFocus}; border-radius: 2px; color: ${THEME_COLORS.textPrimary}; font-size: 11px;">
+      <button class="btn-remove-file" data-file-index="${index}" style="padding: 3px 6px; background: ${THEME_COLORS.danger}; border: none; border-radius: 2px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; display: flex; align-items: center; gap: 2px;">
         ${deleteIconSvg}
       </button>
     </div>
@@ -358,8 +455,14 @@ function setupTabHandlers(dialogElement) {
       currentTab = tab;
 
       // Update active tab
-      tabBtns.forEach((b) => (b.style.background = "#333"));
-      btn.style.background = "var(--turquoise, #29f3d0)";
+      tabBtns.forEach(
+        (b) => (
+          (b.style.background = THEME_COLORS.bgMedium),
+          (b.style.color = THEME_COLORS.textPrimary)
+        )
+      );
+      btn.style.background = THEME_COLORS.primary;
+      btn.style.color = THEME_COLORS.textOnPrimary;
 
       if (tab === "info") {
         tabContent.innerHTML = renderInfoTab();
@@ -441,8 +544,8 @@ function renderFileEditor(fileIndex) {
   const file = currentProject.stylesheets[fileIndex];
   return `
     <div style="width: 100%; height: 100%; display: flex; flex-direction: column;">
-      <div style="padding: 4px 8px; background: #252525; border-bottom: 1px solid transparent;">
-        <div style="margin: 0; color: #aaa; font-size: 11px;">Editing: ${file.name}</div>
+      <div style="padding: 4px 8px; background: ${THEME_COLORS.bgDark}; border-bottom: 1px solid ${THEME_COLORS.borderDark};">
+        <div style="margin: 0; color: ${THEME_COLORS.textSecondary}; font-size: 11px;">Editing: ${file.name}</div>
       </div>
       <div id="code-editor-${fileIndex}" style="flex: 1; width: 100%; height: 100%;"></div>
     </div>
@@ -466,7 +569,6 @@ async function saveCurrentProject() {
       fileSystemHandle = newHandle;
       saveState(); // Update state with new file handle
     }
-    alert("Theme saved successfully!");
   } catch (error) {
     console.error("Error saving theme:", error);
     alert("Error saving theme: " + error.message);

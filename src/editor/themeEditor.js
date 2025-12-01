@@ -14,6 +14,8 @@ import lightTheme from "../files/lightTheme/theme.css?raw";
 let currentProject = null;
 let currentTab = "info";
 let fileSystemHandle = null;
+let isPreviewEnabled = false;
+let originalThemeStyleTags = [];
 
 // State persistence keys
 const STORAGE_KEY_PROJECT = "theme-editor-project";
@@ -52,11 +54,11 @@ const THEME_COLORS = {
 };
 
 // Create and inject the stylesheet for theme editor
-function injectThemeEditorStyles() {
+function injectThemeEditorStyles(container) {
   const styleId = "theme-editor-styles";
 
   // Check if stylesheet already exists
-  if (document.getElementById(styleId)) {
+  if (container.querySelector(`#${styleId}`)) {
     return;
   }
 
@@ -344,14 +346,13 @@ function injectThemeEditorStyles() {
     }
   `;
 
-  document.head.appendChild(style);
+  container.appendChild(style);
 }
 
 export function openThemeEditorDialog() {
   const DialogManager = globalThis.SDKExtensions.EditorDialogManager;
 
   // Inject stylesheet if it doesn't exist
-  injectThemeEditorStyles();
 
   // Check if a window with this ID already exists
   const existingWindow = DialogManager.getWindow("theme-editor");
@@ -364,7 +365,7 @@ export function openThemeEditorDialog() {
   }
 
   // Create dialog
-  DialogManager.createWindow({
+  const themeEditorWindow = DialogManager.createWindow({
     id: "theme-editor",
     title: "Theme Editor",
     width: 600,
@@ -374,10 +375,15 @@ export function openThemeEditorDialog() {
       initializeThemeEditor(dialogElement);
     },
     onClose: () => {
+      // Disable preview mode if it's enabled
+      if (isPreviewEnabled) {
+        disablePreview();
+      }
       // Save state when closing
       saveState();
     },
   });
+  injectThemeEditorStyles(themeEditorWindow.element);
 }
 
 function createInitialContent() {
@@ -547,6 +553,8 @@ function renderEditor(dialogElement) {
     '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>';
   const closeIconSvg =
     '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
+  const previewIconSvg =
+    '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>';
 
   root.innerHTML = `
     <div class="theme-editor-container">
@@ -566,6 +574,9 @@ function renderEditor(dialogElement) {
             .join("")}
         </div>
         <div class="theme-editor-toolbar-actions">
+          <button id="theme-editor-btn-preview" class="theme-editor-btn theme-editor-btn-secondary theme-editor-btn-small" data-preview-enabled="false">
+            ${previewIconSvg} Preview Theme
+          </button>
           <button id="theme-editor-btn-save" class="theme-editor-btn theme-editor-btn-success theme-editor-btn-small">
             ${saveIconSvg} Save
           </button>
@@ -581,6 +592,7 @@ function renderEditor(dialogElement) {
   `;
 
   setupTabHandlers(dialogElement);
+  setupPreviewHandler(dialogElement);
   setupCloseProjectHandler(dialogElement);
   setupSaveHandler(dialogElement);
 }
@@ -793,6 +805,75 @@ async function saveCurrentProject() {
   }
 }
 
+function setupPreviewHandler(dialogElement) {
+  const previewBtn = dialogElement.querySelector("#theme-editor-btn-preview");
+
+  previewBtn?.addEventListener("click", () => {
+    if (isPreviewEnabled) {
+      disablePreview();
+      previewBtn.dataset.previewEnabled = "false";
+      previewBtn.style.opacity = "1";
+    } else {
+      enablePreview();
+      previewBtn.dataset.previewEnabled = "true";
+      previewBtn.style.opacity = "0.7";
+    }
+  });
+}
+
+function enablePreview() {
+  if (!currentProject || isPreviewEnabled) return;
+
+  try {
+    // Find and store current theme style tags
+    originalThemeStyleTags = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"][data-theme]')
+    );
+
+    // Remove them from the document
+    originalThemeStyleTags.forEach((tag) => tag.remove());
+
+    // Inject current project's stylesheets
+    currentProject.stylesheets.forEach((stylesheet, index) => {
+      const styleElement = document.createElement("style");
+      styleElement.id = `theme-preview-${index}`;
+      styleElement.setAttribute("data-theme-preview", "true");
+      styleElement.textContent = stylesheet.content;
+      document.head.appendChild(styleElement);
+    });
+
+    isPreviewEnabled = true;
+    console.log("Preview theme enabled");
+  } catch (error) {
+    console.error("Error enabling preview:", error);
+    alert("Error enabling preview: " + error.message);
+  }
+}
+
+function disablePreview() {
+  if (!isPreviewEnabled) return;
+
+  try {
+    // Remove all preview style elements
+    const previewStyles = document.querySelectorAll(
+      "style[data-theme-preview]"
+    );
+    previewStyles.forEach((style) => style.remove());
+
+    // Restore original theme style tags
+    originalThemeStyleTags.forEach((tag) => {
+      document.head.appendChild(tag);
+    });
+
+    originalThemeStyleTags = [];
+    isPreviewEnabled = false;
+    console.log("Preview theme disabled");
+  } catch (error) {
+    console.error("Error disabling preview:", error);
+    alert("Error disabling preview: " + error.message);
+  }
+}
+
 function setupCloseProjectHandler(dialogElement) {
   dialogElement
     .querySelector("#theme-editor-btn-close-project")
@@ -804,6 +885,11 @@ function setupCloseProjectHandler(dialogElement) {
 }
 
 function closeProject(dialogElement) {
+  // Disable preview mode if it's enabled
+  if (isPreviewEnabled) {
+    disablePreview();
+  }
+
   currentProject = null;
   fileSystemHandle = null;
   currentTab = "info";

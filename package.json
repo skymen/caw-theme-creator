@@ -7,10 +7,10 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "joi": "^17.13.3",
+    "open": "^10.1.0",
     "vite": "^6.0.7",
     "webpack-cli": "^6.0.1",
-    "yocto-spinner": "^0.1.2",
-    "open": "^10.1.0"
+    "yocto-spinner": "^0.1.2"
   },
   "type": "module",
   "scripts": {
@@ -26,5 +26,10 @@
     "generateDocs": "cd build && node generateDocumentation.js",
     "publish": "cd build && node publish.js"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/theme-one-dark": "^6.1.3",
+    "codemirror": "^6.0.2",
+    "jszip": "^3.10.1"
+  }
 }

@@ -2,6 +2,7 @@ import {
   addButtonToMenu,
   initializeMenuObserver,
 } from "./menuButtonManager.js";
+import { openThemeEditorDialog as openThemeEditor } from "./themeEditor.js";
 
 const SDK = globalThis.SDK;
 
@@ -54,28 +55,7 @@ function openThemeEditorDialog() {
     return;
   }
 
-  const DialogManager = globalThis.SDKExtensions.EditorDialogManager;
-
-  // Check if a window with this ID already exists
-  const existingWindow = DialogManager.getWindow("theme-editor");
-  if (existingWindow) {
-    DialogManager.focusWindow("theme-editor");
-    if (existingWindow.isMinimized) {
-      DialogManager.restoreWindow("theme-editor");
-    }
-    return;
-  }
-
-  // Create dialog
-  DialogManager.createWindow({
-    id: "theme-editor",
-    title: "Theme Editor",
-    content:
-      '<div style="padding: 20px;">Theme editor content will go here...</div>',
-    onInit: (dialogElement) => {
-      console.log("Theme editor dialog initialized");
-    },
-  });
+  openThemeEditor();
 }
 
 let testWindowCounter = 0;

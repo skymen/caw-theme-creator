@@ -1,9 +1,9 @@
 <img src="./src/icon.svg" width="100" /><br>
 # CAW Theme Creator
 <i>Description</i> <br>
-### Version 1.3.0.0
+### Version 1.3.0.1
 
-[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/caw-theme-creator/releases/download/caw_theme_creator-1.3.0.0.c3addon/caw_theme_creator-1.3.0.0.c3addon)
+[<img src="https://placehold.co/200x50/4493f8/FFF?text=Download&font=montserrat" width="200"/>](https://github.com/skymen/caw-theme-creator/releases/download/caw_theme_creator-1.3.0.1.c3addon/caw_theme_creator-1.3.0.1.c3addon)
 <br>
 <sub> [See all releases](https://github.com/skymen/caw-theme-creator/releases) </sub> <br>
 

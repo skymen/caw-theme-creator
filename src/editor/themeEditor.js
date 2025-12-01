@@ -574,8 +574,10 @@ function renderEditor(dialogElement) {
     '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>';
   const closeIconSvg =
     '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
-  const previewIconSvg =
+  const previewOnIconSvg =
     '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>';
+  const previewOffIconSvg =
+    '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>';
 
   root.innerHTML = `
     <div class="theme-editor-container">
@@ -595,8 +597,14 @@ function renderEditor(dialogElement) {
             .join("")}
         </div>
         <div class="theme-editor-toolbar-actions">
-          <button id="theme-editor-btn-preview" class="theme-editor-btn theme-editor-btn-secondary theme-editor-btn-small" data-preview-enabled="false">
-            ${previewIconSvg} Preview Theme
+          <button id="theme-editor-btn-preview" class="theme-editor-btn ${
+            isPreviewEnabled
+              ? "theme-editor-btn-primary"
+              : "theme-editor-btn-secondary"
+          } theme-editor-btn-small" data-preview-enabled="${isPreviewEnabled}">
+            ${isPreviewEnabled ? previewOnIconSvg : previewOffIconSvg} ${
+    isPreviewEnabled ? "Preview: ON" : "Preview: OFF"
+  }
           </button>
           <button id="theme-editor-btn-save" class="theme-editor-btn theme-editor-btn-success theme-editor-btn-small">
             ${saveIconSvg} Save
@@ -827,6 +835,10 @@ function setupFileEditorHandlers(dialogElement, fileIndex) {
 
   createCodeEditor(container, file.content, (newContent) => {
     currentProject.stylesheets[fileIndex].content = newContent;
+    // Refresh preview if enabled
+    if (isPreviewEnabled) {
+      refreshPreview();
+    }
   });
 }
 
@@ -850,14 +862,34 @@ function setupPreviewHandler(dialogElement) {
   previewBtn?.addEventListener("click", () => {
     if (isPreviewEnabled) {
       disablePreview();
-      previewBtn.dataset.previewEnabled = "false";
-      previewBtn.style.opacity = "1";
+      updatePreviewButton(dialogElement);
     } else {
       enablePreview();
-      previewBtn.dataset.previewEnabled = "true";
-      previewBtn.style.opacity = "0.7";
+      updatePreviewButton(dialogElement);
     }
   });
+}
+
+function updatePreviewButton(dialogElement) {
+  const previewBtn = dialogElement.querySelector("#theme-editor-btn-preview");
+  if (!previewBtn) return;
+
+  const previewOnIconSvg =
+    '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>';
+  const previewOffIconSvg =
+    '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"/></svg>';
+
+  if (isPreviewEnabled) {
+    previewBtn.innerHTML = `${previewOnIconSvg} Preview: ON`;
+    previewBtn.dataset.previewEnabled = "true";
+    previewBtn.classList.remove("theme-editor-btn-secondary");
+    previewBtn.classList.add("theme-editor-btn-primary");
+  } else {
+    previewBtn.innerHTML = `${previewOffIconSvg} Preview: OFF`;
+    previewBtn.dataset.previewEnabled = "false";
+    previewBtn.classList.remove("theme-editor-btn-primary");
+    previewBtn.classList.add("theme-editor-btn-secondary");
+  }
 }
 
 function enablePreview() {
@@ -886,6 +918,31 @@ function enablePreview() {
   } catch (error) {
     console.error("Error enabling preview:", error);
     alert("Error enabling preview: " + error.message);
+  }
+}
+
+function refreshPreview() {
+  if (!isPreviewEnabled || !currentProject) return;
+
+  try {
+    // Update all preview style elements with current content
+    currentProject.stylesheets.forEach((stylesheet, index) => {
+      const styleElement = document.getElementById(`theme-preview-${index}`);
+      if (styleElement) {
+        styleElement.textContent = stylesheet.content;
+      } else {
+        // If the element doesn't exist, create it
+        const newStyleElement = document.createElement("style");
+        newStyleElement.id = `theme-preview-${index}`;
+        newStyleElement.setAttribute("data-theme-preview", "true");
+        newStyleElement.textContent = stylesheet.content;
+        document.head.appendChild(newStyleElement);
+      }
+    });
+
+    console.log("Preview refreshed");
+  } catch (error) {
+    console.error("Error refreshing preview:", error);
   }
 }
 

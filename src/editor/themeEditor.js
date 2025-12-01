@@ -344,6 +344,57 @@ function injectThemeEditorStyles(container) {
       width: 100%;
       height: 100%;
     }
+
+    .theme-editor-confirm-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    .theme-editor-confirm-dialog {
+      background: ${THEME_COLORS.bgDarker};
+      border: 1px solid ${THEME_COLORS.borderLight};
+      border-radius: 4px;
+      padding: 20px;
+      min-width: 300px;
+      max-width: 400px;
+    }
+
+    .theme-editor-confirm-message {
+      color: ${THEME_COLORS.textPrimary};
+      margin-bottom: 15px;
+      font-size: 13px;
+    }
+
+    .theme-editor-confirm-buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .theme-editor-prompt-input {
+      width: 100%;
+      padding: 6px 8px;
+      background: ${THEME_COLORS.inputBg};
+      border: 1px solid ${THEME_COLORS.inputBorder};
+      border-radius: 3px;
+      color: ${THEME_COLORS.textPrimary};
+      font-size: 12px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+
+    .theme-editor-prompt-input:focus {
+      outline: none;
+      border-color: ${THEME_COLORS.primary};
+    }
   `;
 
   container.appendChild(style);
@@ -775,41 +826,58 @@ function setupInfoTabHandlers(dialogElement) {
     });
   });
 
-  // File name inputs
-  const fileNameInputs = dialogElement.querySelectorAll(".file-name-input");
-  fileNameInputs.forEach((input) => {
-    input.addEventListener("input", () => {
-      const index = parseInt(input.dataset.fileIndex);
-      currentProject.stylesheets[index].name = input.value;
-    });
-  });
-
-  // Remove file buttons
-  const removeButtons = dialogElement.querySelectorAll(".btn-remove-file");
-  removeButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const index = parseInt(btn.dataset.fileIndex);
-      if (
-        confirm(
-          `Are you sure you want to remove "${currentProject.stylesheets[index].name}"?`
-        )
-      ) {
-        currentProject.stylesheets.splice(index, 1);
-        renderEditor(dialogElement);
+  // File name inputs - use event delegation to avoid multiple listeners
+  const fileList = dialogElement.querySelector("#theme-editor-file-list");
+  if (fileList) {
+    // Remove existing listeners by cloning
+    const newFileList = fileList.cloneNode(true);
+    fileList.parentNode.replaceChild(newFileList, fileList);
+    
+    // Add single delegated listener for all file name inputs
+    newFileList.addEventListener("input", (e) => {
+      if (e.target.classList.contains("file-name-input")) {
+        const index = parseInt(e.target.dataset.fileIndex);
+        currentProject.stylesheets[index].name = e.target.value;
       }
     });
-  });
+
+    // Add single delegated listener for all remove buttons
+    newFileList.addEventListener("click", (e) => {
+      const removeBtn = e.target.closest(".btn-remove-file");
+      if (removeBtn) {
+        const index = parseInt(removeBtn.dataset.fileIndex);
+        showConfirmDialog(
+          dialogElement,
+          `Are you sure you want to remove "${currentProject.stylesheets[index].name}"?`,
+          () => {
+            currentProject.stylesheets.splice(index, 1);
+            renderEditor(dialogElement);
+          },
+          "Remove"
+        );
+      }
+    });
+  }
 
   // Add file button
-  dialogElement
-    .querySelector("#theme-editor-btn-add-file")
-    ?.addEventListener("click", () => {
-      const fileName = prompt("Enter file name:", "newfile.css");
-      if (fileName) {
-        currentProject.stylesheets.push({ name: fileName, content: "" });
-        renderEditor(dialogElement);
-      }
+  const addFileBtn = dialogElement.querySelector("#theme-editor-btn-add-file");
+  if (addFileBtn) {
+    // Remove any existing listeners by cloning the element
+    const newAddFileBtn = addFileBtn.cloneNode(true);
+    addFileBtn.parentNode.replaceChild(newAddFileBtn, addFileBtn);
+    
+    newAddFileBtn.addEventListener("click", () => {
+      showPromptDialog(
+        dialogElement,
+        "Enter file name:",
+        "newfile.css",
+        (fileName) => {
+          currentProject.stylesheets.push({ name: fileName, content: "" });
+          renderEditor(dialogElement);
+        }
+      );
     });
+  }
 }
 
 function setupSaveHandler(dialogElement) {
@@ -974,10 +1042,116 @@ function setupCloseProjectHandler(dialogElement) {
   dialogElement
     .querySelector("#theme-editor-btn-close-project")
     ?.addEventListener("click", () => {
-      if (confirm("Close current project? Any unsaved changes will be lost.")) {
-        closeProject(dialogElement);
-      }
+      showConfirmDialog(
+        dialogElement,
+        "Close current project? Any unsaved changes will be lost.",
+        () => closeProject(dialogElement),
+        "Close Project"
+      );
     });
+}
+
+function showConfirmDialog(
+  dialogElement,
+  message,
+  onConfirm,
+  confirmText = "Yes"
+) {
+  const overlay = document.createElement("div");
+  overlay.className = "theme-editor-confirm-overlay";
+  overlay.innerHTML = `
+    <div class="theme-editor-confirm-dialog">
+      <div class="theme-editor-confirm-message">${message}</div>
+      <div class="theme-editor-confirm-buttons">
+        <button class="theme-editor-btn theme-editor-btn-secondary theme-editor-btn-small" data-action="cancel">
+          Cancel
+        </button>
+        <button class="theme-editor-btn theme-editor-btn-danger theme-editor-btn-small" data-action="confirm">
+          ${confirmText}
+        </button>
+      </div>
+    </div>
+  `;
+
+  const confirmBtn = overlay.querySelector('[data-action="confirm"]');
+  const cancelBtn = overlay.querySelector('[data-action="cancel"]');
+
+  const closeDialog = () => overlay.remove();
+
+  confirmBtn.addEventListener("click", () => {
+    closeDialog();
+    onConfirm();
+  });
+
+  cancelBtn.addEventListener("click", closeDialog);
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeDialog();
+  });
+
+  dialogElement.appendChild(overlay);
+}
+
+function showPromptDialog(
+  dialogElement,
+  message,
+  defaultValue = "",
+  onConfirm
+) {
+  const overlay = document.createElement("div");
+  overlay.className = "theme-editor-confirm-overlay";
+  overlay.innerHTML = `
+    <div class="theme-editor-confirm-dialog">
+      <div class="theme-editor-confirm-message">${message}</div>
+      <input type="text" class="theme-editor-prompt-input" value="${defaultValue}" />
+      <div class="theme-editor-confirm-buttons">
+        <button class="theme-editor-btn theme-editor-btn-secondary theme-editor-btn-small" data-action="cancel">
+          Cancel
+        </button>
+        <button class="theme-editor-btn theme-editor-btn-primary theme-editor-btn-small" data-action="confirm">
+          OK
+        </button>
+      </div>
+    </div>
+  `;
+
+  const input = overlay.querySelector(".theme-editor-prompt-input");
+  const confirmBtn = overlay.querySelector('[data-action="confirm"]');
+  const cancelBtn = overlay.querySelector('[data-action="cancel"]');
+
+  const closeDialog = () => overlay.remove();
+
+  const handleConfirm = () => {
+    const value = input.value.trim();
+    if (value) {
+      closeDialog();
+      onConfirm(value);
+    }
+  };
+
+  confirmBtn.addEventListener("click", handleConfirm);
+  cancelBtn.addEventListener("click", closeDialog);
+  
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleConfirm();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      closeDialog();
+    }
+  });
+
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeDialog();
+  });
+
+  dialogElement.appendChild(overlay);
+  
+  // Focus and select the input
+  setTimeout(() => {
+    input.focus();
+    input.select();
+  }, 0);
 }
 
 function closeProject(dialogElement) {

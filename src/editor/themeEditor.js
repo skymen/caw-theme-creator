@@ -51,8 +51,318 @@ const THEME_COLORS = {
   inputBorderFocus: "var(--gray11, #575757)",
 };
 
+// Create and inject the stylesheet for theme editor
+function injectThemeEditorStyles() {
+  const styleId = "theme-editor-styles";
+
+  // Check if stylesheet already exists
+  if (document.getElementById(styleId)) {
+    return;
+  }
+
+  const style = document.createElement("style");
+  style.id = styleId;
+  style.textContent = `
+    /* Theme Editor Styles */
+    .theme-editor-root {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: transparent;
+      color: ${THEME_COLORS.textPrimary};
+      font-size: 13px;
+    }
+
+    .theme-editor-welcome {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .theme-editor-welcome h3 {
+      margin-bottom: 15px;
+      color: ${THEME_COLORS.primary};
+      font-size: 16px;
+    }
+
+    .theme-editor-button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .theme-editor-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .theme-editor-btn-primary {
+      background: ${THEME_COLORS.primary};
+      color: ${THEME_COLORS.textOnPrimary};
+    }
+
+    .theme-editor-btn-secondary {
+      background: ${THEME_COLORS.secondary};
+      color: ${THEME_COLORS.textOnPrimary};
+    }
+
+    .theme-editor-btn-success {
+      background: ${THEME_COLORS.success};
+      color: ${THEME_COLORS.textOnPrimary};
+    }
+
+    .theme-editor-btn-danger {
+      background: ${THEME_COLORS.danger};
+      color: ${THEME_COLORS.textPrimary};
+    }
+
+    .theme-editor-btn-small {
+      padding: 4px 8px;
+      font-size: 11px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .theme-editor-btn-back {
+      padding: 6px 12px;
+      background: ${THEME_COLORS.borderLight};
+      color: ${THEME_COLORS.textPrimary};
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 12px;
+      margin-top: 10px;
+    }
+
+    .theme-editor-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      font-size: 12px;
+    }
+
+    .theme-editor-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: ${THEME_COLORS.bgDark};
+      border-bottom: 1px solid ${THEME_COLORS.borderDark};
+      padding: 4px 8px;
+    }
+
+    .theme-editor-tab-bar {
+      display: flex;
+      overflow-x: auto;
+      flex: 1;
+    }
+
+    .theme-editor-tab-btn {
+      padding: 6px 12px;
+      background: ${THEME_COLORS.bgMedium};
+      border: none;
+      border-right: 1px solid ${THEME_COLORS.borderDark};
+      color: ${THEME_COLORS.textPrimary};
+      cursor: pointer;
+      font-size: 11px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .theme-editor-tab-btn.active {
+      background: ${THEME_COLORS.primary};
+    }
+
+    .theme-editor-toolbar-actions {
+      display: flex;
+      gap: 4px;
+      margin-left: 8px;
+    }
+
+    .theme-editor-content {
+      flex: 1;
+      overflow: auto;
+      background: ${THEME_COLORS.bgDarker};
+    }
+
+    .theme-editor-info-panel {
+      padding: 12px;
+    }
+
+    .theme-editor-info-panel h3 {
+      color: ${THEME_COLORS.primary};
+      margin: 0 0 10px 0;
+      font-size: 13px;
+    }
+
+    .theme-editor-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .theme-editor-form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .theme-editor-form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .theme-editor-label {
+      display: block;
+      margin-bottom: 2px;
+      color: ${THEME_COLORS.textSecondary};
+      font-size: 11px;
+    }
+
+    .theme-editor-input {
+      width: 100%;
+      padding: 4px 6px;
+      background: ${THEME_COLORS.inputBg};
+      border: 1px solid ${THEME_COLORS.inputBorder};
+      border-radius: 3px;
+      color: ${THEME_COLORS.textPrimary};
+      font-size: 12px;
+    }
+
+    .theme-editor-textarea {
+      width: 100%;
+      padding: 4px 6px;
+      background: ${THEME_COLORS.inputBg};
+      border: 1px solid ${THEME_COLORS.inputBorder};
+      border-radius: 3px;
+      color: ${THEME_COLORS.textPrimary};
+      font-size: 12px;
+      resize: vertical;
+    }
+
+    .theme-editor-file-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .theme-editor-file-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px;
+      background: ${THEME_COLORS.inputBg};
+      border: 1px solid ${THEME_COLORS.inputBorder};
+      border-radius: 3px;
+    }
+
+    .theme-editor-file-input {
+      flex: 1;
+      padding: 3px 6px;
+      background: transparent;
+      border: 1px solid ${THEME_COLORS.inputBorderFocus};
+      border-radius: 2px;
+      color: ${THEME_COLORS.textPrimary};
+      font-size: 11px;
+    }
+
+    .theme-editor-template-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .theme-editor-template-btn {
+      padding: 10px;
+      background: ${THEME_COLORS.bgMedium};
+      border: 1px solid ${THEME_COLORS.borderLight};
+      border-radius: 4px;
+      color: ${THEME_COLORS.textPrimary};
+      cursor: pointer;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .theme-editor-template-btn:hover {
+      border-color: ${THEME_COLORS.primary};
+      background: ${THEME_COLORS.hoverBg};
+    }
+
+    .theme-editor-template-icon {
+      margin-bottom: 4px;
+    }
+
+    .theme-editor-template-title {
+      font-weight: 600;
+      margin-bottom: 2px;
+      font-size: 12px;
+    }
+
+    .theme-editor-template-desc {
+      font-size: 10px;
+      color: ${THEME_COLORS.textSecondary};
+    }
+
+    .theme-editor-dialog-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+      overflow: auto;
+    }
+
+    .theme-editor-dialog-header {
+      margin: 0 0 10px 0;
+      color: ${THEME_COLORS.primary};
+      font-size: 14px;
+    }
+
+    .theme-editor-file-editor {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .theme-editor-file-header {
+      padding: 4px 8px;
+      background: ${THEME_COLORS.bgDark};
+      border-bottom: 1px solid ${THEME_COLORS.borderDark};
+    }
+
+    .theme-editor-file-header-text {
+      margin: 0;
+      color: ${THEME_COLORS.textSecondary};
+      font-size: 11px;
+    }
+
+    .theme-editor-code-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
 export function openThemeEditorDialog() {
   const DialogManager = globalThis.SDKExtensions.EditorDialogManager;
+
+  // Inject stylesheet if it doesn't exist
+  injectThemeEditorStyles();
 
   // Check if a window with this ID already exists
   const existingWindow = DialogManager.getWindow("theme-editor");
@@ -83,13 +393,13 @@ export function openThemeEditorDialog() {
 
 function createInitialContent() {
   return `
-    <div id="theme-editor-root" style="width: 100%; height: 100%; display: flex; flex-direction: column; background: transparent; color: ${THEME_COLORS.textPrimary}; font-size: 13px;">
-      <div id="theme-editor-welcome" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-          <button id="btn-new-theme" style="padding: 8px 16px; background: ${THEME_COLORS.primary}; border: none; border-radius: 3px; color: ${THEME_COLORS.textOnPrimary}; cursor: pointer; font-size: 13px;">
+    <div id="theme-editor-root" class="theme-editor-root">
+      <div id="theme-editor-welcome" class="theme-editor-welcome">
+        <div class="theme-editor-button-group">
+          <button id="btn-new-theme" class="theme-editor-btn theme-editor-btn-primary">
             New Theme
           </button>
-          <button id="btn-open-theme" style="padding: 8px 16px; background: ${THEME_COLORS.secondary}; border: none; border-radius: 3px; color: ${THEME_COLORS.textOnPrimary}; cursor: pointer; font-size: 13px;">
+          <button id="btn-open-theme" class="theme-editor-btn theme-editor-btn-secondary">
             Open .c3addon
           </button>
         </div>
@@ -131,31 +441,31 @@ async function showNewThemeDialog(dialogElement) {
     '<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>';
 
   const newThemeDialog = `
-    <div style="flex: 1; display: flex; flex-direction: column; padding: 15px; overflow: auto;">
-      <h3 style="margin: 0 0 10px 0; color: ${THEME_COLORS.primary}; font-size: 14px;">Choose Starting Point</h3>
-      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-        <button class="template-btn" data-template="empty" style="padding: 10px; background: ${THEME_COLORS.bgDark}; border: 1px solid ${THEME_COLORS.borderLight}; border-radius: 4px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; text-align: center;">
-          <div style="margin-bottom: 4px;">${emptyIconSvg}</div>
-          <div style="font-weight: 600; margin-bottom: 2px; font-size: 12px;">Empty</div>
-          <div style="font-size: 10px; color: ${THEME_COLORS.textSecondary};">Start from scratch</div>
+    <div class="theme-editor-dialog-container">
+      <h3 class="theme-editor-dialog-header">Choose Starting Point</h3>
+      <div class="theme-editor-template-grid">
+        <button class="theme-editor-template-btn" data-template="empty">
+          <div class="theme-editor-template-icon">${emptyIconSvg}</div>
+          <div class="theme-editor-template-title">Empty</div>
+          <div class="theme-editor-template-desc">Start from scratch</div>
         </button>
-        <button class="template-btn" data-template="dark" style="padding: 10px; background: ${THEME_COLORS.bgDark}; border: 1px solid ${THEME_COLORS.borderLight}; border-radius: 4px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; text-align: center;">
-          <div style="margin-bottom: 4px;">${darkIconSvg}</div>
-          <div style="font-weight: 600; margin-bottom: 2px; font-size: 12px;">Dark</div>
-          <div style="font-size: 10px; color: ${THEME_COLORS.textSecondary};">3 files</div>
+        <button class="theme-editor-template-btn" data-template="dark">
+          <div class="theme-editor-template-icon">${darkIconSvg}</div>
+          <div class="theme-editor-template-title">Dark</div>
+          <div class="theme-editor-template-desc">3 files</div>
         </button>
-        <button class="template-btn" data-template="light" style="padding: 10px; background: ${THEME_COLORS.bgDark}; border: 1px solid ${THEME_COLORS.borderLight}; border-radius: 4px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; text-align: center;">
-          <div style="margin-bottom: 4px;">${lightIconSvg}</div>
-          <div style="font-weight: 600; margin-bottom: 2px; font-size: 12px;">Light</div>
-          <div style="font-size: 10px; color: ${THEME_COLORS.textSecondary};">Light mode</div>
+        <button class="theme-editor-template-btn" data-template="light">
+          <div class="theme-editor-template-icon">${lightIconSvg}</div>
+          <div class="theme-editor-template-title">Light</div>
+          <div class="theme-editor-template-desc">Light mode</div>
         </button>
-        <button class="template-btn" data-template="custom" style="padding: 10px; background: ${THEME_COLORS.bgDark}; border: 1px solid ${THEME_COLORS.borderLight}; border-radius: 4px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; text-align: center;">
-          <div style="margin-bottom: 4px;">${importIconSvg}</div>
-          <div style="font-weight: 600; margin-bottom: 2px; font-size: 12px;">Import</div>
-          <div style="font-size: 10px; color: ${THEME_COLORS.textSecondary};">From .c3addon</div>
+        <button class="theme-editor-template-btn" data-template="custom">
+          <div class="theme-editor-template-icon">${importIconSvg}</div>
+          <div class="theme-editor-template-title">Import</div>
+          <div class="theme-editor-template-desc">From .c3addon</div>
         </button>
       </div>
-      <button id="btn-back" style="margin-top: 10px; padding: 6px 12px; background: ${THEME_COLORS.bgDark}; border: none; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 12px;">
+      <button id="btn-back" class="theme-editor-btn-back">
         ← Back
       </button>
     </div>
@@ -163,17 +473,9 @@ async function showNewThemeDialog(dialogElement) {
 
   root.innerHTML = newThemeDialog;
 
-  // Add hover effect
-  const templateBtns = root.querySelectorAll(".template-btn");
+  // Setup template button handlers
+  const templateBtns = root.querySelectorAll(".theme-editor-template-btn");
   templateBtns.forEach((btn) => {
-    btn.addEventListener("mouseenter", () => {
-      btn.style.borderColor = THEME_COLORS.primary;
-      btn.style.background = THEME_COLORS.hoverBg;
-    });
-    btn.addEventListener("mouseleave", () => {
-      btn.style.borderColor = THEME_COLORS.borderLight;
-      btn.style.background = THEME_COLORS.bgMedium;
-    });
     btn.addEventListener("click", async () => {
       const template = btn.dataset.template;
       await createNewTheme(template, dialogElement);
@@ -258,52 +560,32 @@ function renderEditor(dialogElement) {
     '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>';
 
   root.innerHTML = `
-    <div style="display: flex; flex-direction: column; width: 100%; height: 100%; font-size: 12px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; background: ${
-        THEME_COLORS.bgDarkest
-      }; border-bottom: 1px solid ${
-    THEME_COLORS.borderDark
-  }; padding: 4px 8px;">
-        <div id="tab-bar" style="display: flex; overflow-x: auto; flex: 1;">
-          <button class="tab-btn" data-tab="info" style="padding: 6px 12px; background: ${
-            THEME_COLORS.primary
-          }; border: none; border-right: 1px solid ${
-    THEME_COLORS.borderDark
-  }; color: ${
-    THEME_COLORS.textOnPrimary
-  }; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+    <div class="theme-editor-container">
+      <div class="theme-editor-toolbar">
+        <div id="tab-bar" class="theme-editor-tab-bar">
+          <button class="theme-editor-tab-btn active" data-tab="info">
             ${infoIconSvg} Info
           </button>
           ${currentProject.stylesheets
             .map(
               (file, index) => `
-            <button class="tab-btn" data-tab="file-${index}" style="padding: 6px 12px; background: ${THEME_COLORS.bgMedium}; border: none; border-right: 1px solid ${THEME_COLORS.borderDark}; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+            <button class="theme-editor-tab-btn" data-tab="file-${index}">
               ${fileIconSvg} ${file.name}
             </button>
           `
             )
             .join("")}
         </div>
-        <div style="display: flex; gap: 4px; margin-left: 8px;">
-          <button id="btn-save" style="padding: 4px 8px; background: ${
-            THEME_COLORS.success
-          }; border: none; border-radius: 3px; color: ${
-    THEME_COLORS.textOnPrimary
-  }; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+        <div class="theme-editor-toolbar-actions">
+          <button id="btn-save" class="theme-editor-btn theme-editor-btn-success theme-editor-btn-small">
             ${saveIconSvg} Save
           </button>
-          <button id="btn-close-project" style="padding: 4px 8px; background: ${
-            THEME_COLORS.danger
-          }; border: none; border-radius: 3px; color: ${
-    THEME_COLORS.textPrimary
-  }; cursor: pointer; font-size: 11px; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+          <button id="btn-close-project" class="theme-editor-btn theme-editor-btn-danger theme-editor-btn-small">
             ${closeIconSvg} Close
           </button>
         </div>
       </div>
-      <div id="tab-content" style="flex: 1; overflow: auto; background: ${
-        THEME_COLORS.bgDarker
-      };">
+      <div id="tab-content" class="theme-editor-content">
         ${renderInfoTab()}
       </div>
     </div>
@@ -319,106 +601,60 @@ function renderInfoTab() {
     '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>';
 
   return `
-    <div style="padding: 12px;">
-      <h3 style="color: ${
-        THEME_COLORS.primary
-      }; margin: 0 0 10px 0; font-size: 13px;">Addon Information</h3>
+    <div class="theme-editor-info-panel">
+      <h3>Addon Information</h3>
       
-      <div style="display: flex; flex-direction: column; gap: 8px;">
-        <div>
-          <label style="display: block; margin-bottom: 2px; color: ${
-            THEME_COLORS.textSecondary
-          }; font-size: 11px;">Name</label>
+      <div class="theme-editor-form">
+        <div class="theme-editor-form-group">
+          <label class="theme-editor-label">Name</label>
           <input type="text" id="input-name" value="${
             currentProject.name
-          }" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
-    THEME_COLORS.inputBg
-  }; border: 1px solid ${
-    THEME_COLORS.inputBorder
-  }; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; font-size: 12px;">
+          }" class="theme-editor-input">
         </div>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-          <div>
-            <label style="display: block; margin-bottom: 2px; color: ${
-              THEME_COLORS.textSecondary
-            }; font-size: 11px;">Version</label>
+        <div class="theme-editor-form-row">
+          <div class="theme-editor-form-group">
+            <label class="theme-editor-label">Version</label>
             <input type="text" id="input-version" value="${
               currentProject.version
-            }" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
-    THEME_COLORS.inputBg
-  }; border: 1px solid ${
-    THEME_COLORS.inputBorder
-  }; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; font-size: 12px;">
+            }" class="theme-editor-input">
           </div>
           
-          <div>
-            <label style="display: block; margin-bottom: 2px; color: ${
-              THEME_COLORS.textSecondary
-            }; font-size: 11px;">Author</label>
+          <div class="theme-editor-form-group">
+            <label class="theme-editor-label">Author</label>
             <input type="text" id="input-author" value="${
               currentProject.author
-            }" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
-    THEME_COLORS.inputBg
-  }; border: 1px solid ${
-    THEME_COLORS.inputBorder
-  }; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; font-size: 12px;">
+            }" class="theme-editor-input">
           </div>
         </div>
         
-        <div>
-          <label style="display: block; margin-bottom: 2px; color: ${
-            THEME_COLORS.textSecondary
-          }; font-size: 11px;">Website</label>
+        <div class="theme-editor-form-group">
+          <label class="theme-editor-label">Website</label>
           <input type="url" id="input-website" value="${
             currentProject.website
-          }" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
-    THEME_COLORS.inputBg
-  }; border: 1px solid ${
-    THEME_COLORS.inputBorder
-  }; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; font-size: 12px;">
+          }" class="theme-editor-input">
         </div>
         
-        <div>
-          <label style="display: block; margin-bottom: 2px; color: ${
-            THEME_COLORS.textSecondary
-          }; font-size: 11px;">Documentation</label>
+        <div class="theme-editor-form-group">
+          <label class="theme-editor-label">Documentation</label>
           <input type="url" id="input-documentation" value="${
             currentProject.documentation
-          }" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
-    THEME_COLORS.inputBg
-  }; border: 1px solid ${
-    THEME_COLORS.inputBorder
-  }; border-radius: 3px; color: ${THEME_COLORS.textPrimary}; font-size: 12px;">
+          }" class="theme-editor-input">
         </div>
         
-        <div>
-          <label style="display: block; margin-bottom: 2px; color: ${
-            THEME_COLORS.textSecondary
-          }; font-size: 11px;">Description</label>
-          <textarea id="input-description" rows="2" style="width: calc(100% - 12px); padding: 4px 6px; background: ${
-            THEME_COLORS.inputBg
-          }; border: 1px solid ${
-    THEME_COLORS.inputBorder
-  }; border-radius: 3px; color: ${
-    THEME_COLORS.textPrimary
-  }; font-size: 12px; resize: vertical;">${
-    currentProject.description
-  }</textarea>
+        <div class="theme-editor-form-group">
+          <label class="theme-editor-label">Description</label>
+          <textarea id="input-description" rows="2" class="theme-editor-textarea">${
+            currentProject.description
+          }</textarea>
         </div>
         
-        <div>
-          <label style="display: block; margin-bottom: 4px; color: ${
-            THEME_COLORS.textSecondary
-          }; font-size: 11px;">Files</label>
-          <div id="file-list" style="display: flex; flex-direction: column; gap: 4px;">
+        <div class="theme-editor-form-group">
+          <label class="theme-editor-label">Files</label>
+          <div id="file-list" class="theme-editor-file-list">
             ${renderFileList()}
           </div>
-          <button id="btn-add-file" style="margin-top: 4px; padding: 4px 8px; background: ${
-            THEME_COLORS.primary
-          }; border: none; border-radius: 3px; color: ${
-    THEME_COLORS.textOnPrimary
-  }; cursor: pointer; font-size: 11px; display: flex; align-items: center; gap: 4px;">
+          <button id="btn-add-file" class="theme-editor-btn theme-editor-btn-primary theme-editor-btn-small" style="margin-top: 4px;">
             ${addIconSvg} Add
           </button>
         </div>
@@ -434,9 +670,9 @@ function renderFileList() {
   return currentProject.stylesheets
     .map(
       (file, index) => `
-    <div style="display: flex; align-items: center; gap: 4px; padding: 4px; background: ${THEME_COLORS.inputBg}; border: 1px solid ${THEME_COLORS.inputBorder}; border-radius: 3px;">
-      <input type="text" data-file-index="${index}" class="file-name-input" value="${file.name}" style="flex: 1; padding: 3px 6px; background: transparent; border: 1px solid ${THEME_COLORS.inputBorderFocus}; border-radius: 2px; color: ${THEME_COLORS.textPrimary}; font-size: 11px;">
-      <button class="btn-remove-file" data-file-index="${index}" style="padding: 3px 6px; background: ${THEME_COLORS.danger}; border: none; border-radius: 2px; color: ${THEME_COLORS.textPrimary}; cursor: pointer; font-size: 11px; display: flex; align-items: center; gap: 2px;">
+    <div class="theme-editor-file-item">
+      <input type="text" data-file-index="${index}" class="file-name-input theme-editor-file-input" value="${file.name}">
+      <button class="btn-remove-file theme-editor-btn theme-editor-btn-danger theme-editor-btn-small" data-file-index="${index}">
         ${deleteIconSvg}
       </button>
     </div>
@@ -455,14 +691,8 @@ function setupTabHandlers(dialogElement) {
       currentTab = tab;
 
       // Update active tab
-      tabBtns.forEach(
-        (b) => (
-          (b.style.background = THEME_COLORS.bgMedium),
-          (b.style.color = THEME_COLORS.textPrimary)
-        )
-      );
-      btn.style.background = THEME_COLORS.primary;
-      btn.style.color = THEME_COLORS.textOnPrimary;
+      tabBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
 
       if (tab === "info") {
         tabContent.innerHTML = renderInfoTab();
@@ -543,11 +773,11 @@ function setupSaveHandler(dialogElement) {
 function renderFileEditor(fileIndex) {
   const file = currentProject.stylesheets[fileIndex];
   return `
-    <div style="width: 100%; height: 100%; display: flex; flex-direction: column;">
-      <div style="padding: 4px 8px; background: ${THEME_COLORS.bgDark}; border-bottom: 1px solid ${THEME_COLORS.borderDark};">
-        <div style="margin: 0; color: ${THEME_COLORS.textSecondary}; font-size: 11px;">Editing: ${file.name}</div>
+    <div class="theme-editor-file-editor">
+      <div class="theme-editor-file-header">
+        <div class="theme-editor-file-header-text">Editing: ${file.name}</div>
       </div>
-      <div id="code-editor-${fileIndex}" style="flex: 1; width: 100%; height: 100%;"></div>
+      <div id="code-editor-${fileIndex}" class="theme-editor-code-container"></div>
     </div>
   `;
 }

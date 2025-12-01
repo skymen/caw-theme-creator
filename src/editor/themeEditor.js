@@ -74,6 +74,7 @@ function injectThemeEditorStyles(container) {
       background: transparent;
       color: ${THEME_COLORS.textPrimary};
       font-size: 13px;
+      position: relative;
     }
 
     .theme-editor-welcome {
@@ -346,7 +347,7 @@ function injectThemeEditorStyles(container) {
     }
 
     .theme-editor-confirm-overlay {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       right: 0;
@@ -832,7 +833,7 @@ function setupInfoTabHandlers(dialogElement) {
     // Remove existing listeners by cloning
     const newFileList = fileList.cloneNode(true);
     fileList.parentNode.replaceChild(newFileList, fileList);
-    
+
     // Add single delegated listener for all file name inputs
     newFileList.addEventListener("input", (e) => {
       if (e.target.classList.contains("file-name-input")) {
@@ -865,7 +866,7 @@ function setupInfoTabHandlers(dialogElement) {
     // Remove any existing listeners by cloning the element
     const newAddFileBtn = addFileBtn.cloneNode(true);
     addFileBtn.parentNode.replaceChild(newAddFileBtn, addFileBtn);
-    
+
     newAddFileBtn.addEventListener("click", () => {
       showPromptDialog(
         dialogElement,
@@ -1130,7 +1131,7 @@ function showPromptDialog(
 
   confirmBtn.addEventListener("click", handleConfirm);
   cancelBtn.addEventListener("click", closeDialog);
-  
+
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -1146,7 +1147,7 @@ function showPromptDialog(
   });
 
   dialogElement.appendChild(overlay);
-  
+
   // Focus and select the input
   setTimeout(() => {
     input.focus();

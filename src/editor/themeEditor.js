@@ -441,7 +441,7 @@ export function openThemeEditorDialog() {
         // Update file handle if user selected a new location
         if (newHandle) {
           fileSystemHandle = newHandle;
-          saveState();
+          await saveState();
         }
 
         // Send success response back to popup
@@ -487,7 +487,7 @@ export function openThemeEditorDialog() {
         disablePreview();
       }
       // Save state when closing
-      saveState();
+      saveState().catch(console.error);
     },
     onPopout: (windowData, popupWindow) => {
       console.log("Window popped out to browser:", windowData.title);
@@ -637,7 +637,7 @@ async function createNewTheme(template, dialogElement) {
         return;
     }
 
-    saveState(); // Save state after creating project
+    await saveState(); // Save state after creating project
     renderEditor(dialogElement);
   } catch (error) {
     console.error("Error creating theme:", error);
@@ -659,7 +659,7 @@ async function openExistingTheme(dialogElement) {
     fileSystemHandle = fileHandle;
     const file = await fileHandle.getFile();
     currentProject = await loadThemeFromZip(file);
-    saveState(); // Save state after opening project
+    await saveState(); // Save state after opening project
     renderEditor(dialogElement);
   } catch (error) {
     if (error.name !== "AbortError") {
@@ -985,7 +985,7 @@ async function saveCurrentProject() {
               // Update file handle if new one was provided
               if (event.data.newHandle) {
                 fileSystemHandle = event.data.newHandle;
-                saveState();
+                saveState().catch(console.error);
               }
               resolve();
             } else {
@@ -1019,7 +1019,7 @@ async function saveCurrentProject() {
       // Update file handle if user selected a new location
       if (newHandle) {
         fileSystemHandle = newHandle;
-        saveState(); // Update state with new file handle
+        await saveState(); // Update state with new file handle
       }
     }
   } catch (error) {
@@ -1274,24 +1274,143 @@ function closeProject(dialogElement) {
   initializeThemeEditor(dialogElement);
 }
 
+// IndexedDB helper functions for FileSystemHandle persistence
+function openIDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(IDB_NAME, IDB_VERSION);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(IDB_STORE)) {
+        db.createObjectStore(IDB_STORE);
+      }
+    };
+  });
+}
+
+async function saveFileHandle(handle) {
+  if (!handle) return;
+
+  try {
+    const db = await openIDB();
+    const transaction = db.transaction([IDB_STORE], "readwrite");
+    const store = transaction.objectStore(IDB_STORE);
+    store.put(handle, STORAGE_KEY_HANDLE);
+
+    return new Promise((resolve, reject) => {
+      transaction.oncomplete = () => {
+        db.close();
+        resolve();
+      };
+      transaction.onerror = () => {
+        db.close();
+        reject(transaction.error);
+      };
+    });
+  } catch (error) {
+    console.error("Failed to save file handle to IndexedDB:", error);
+  }
+}
+
+async function loadFileHandle() {
+  try {
+    const db = await openIDB();
+    const transaction = db.transaction([IDB_STORE], "readonly");
+    const store = transaction.objectStore(IDB_STORE);
+    const request = store.get(STORAGE_KEY_HANDLE);
+
+    return new Promise((resolve, reject) => {
+      request.onsuccess = () => {
+        db.close();
+        resolve(request.result);
+      };
+      request.onerror = () => {
+        db.close();
+        reject(request.error);
+      };
+    });
+  } catch (error) {
+    console.error("Failed to load file handle from IndexedDB:", error);
+    return null;
+  }
+}
+
+async function clearFileHandle() {
+  try {
+    const db = await openIDB();
+    const transaction = db.transaction([IDB_STORE], "readwrite");
+    const store = transaction.objectStore(IDB_STORE);
+    store.delete(STORAGE_KEY_HANDLE);
+
+    return new Promise((resolve, reject) => {
+      transaction.oncomplete = () => {
+        db.close();
+        resolve();
+      };
+      transaction.onerror = () => {
+        db.close();
+        reject(transaction.error);
+      };
+    });
+  } catch (error) {
+    console.error("Failed to clear file handle from IndexedDB:", error);
+  }
+}
+
 // State persistence functions
-function saveState() {
+async function saveState() {
   try {
     if (currentProject) {
       localStorage.setItem(STORAGE_KEY_PROJECT, JSON.stringify(currentProject));
     }
-    // Note: FileSystemHandle cannot be serialized, so we can't persist it across browser restarts
-    // But we keep it in memory for the current session
+    // Save FileSystemHandle to IndexedDB (supports structured clone)
+    if (fileSystemHandle) {
+      await saveFileHandle(fileSystemHandle);
+    }
   } catch (error) {
     console.error("Failed to save state:", error);
   }
 }
 
-function restoreState(dialogElement) {
+async function restoreState(dialogElement) {
   try {
     const savedProject = localStorage.getItem(STORAGE_KEY_PROJECT);
     if (savedProject) {
       currentProject = JSON.parse(savedProject);
+
+      // Try to restore FileSystemHandle from IndexedDB
+      const savedHandle = await loadFileHandle();
+      if (savedHandle) {
+        // Verify we still have permission to access the file
+        try {
+          const permission = await savedHandle.queryPermission({
+            mode: "readwrite",
+          });
+          if (permission === "granted") {
+            fileSystemHandle = savedHandle;
+          } else {
+            // Try to request permission
+            const requestResult = await savedHandle.requestPermission({
+              mode: "readwrite",
+            });
+            if (requestResult === "granted") {
+              fileSystemHandle = savedHandle;
+            } else {
+              console.log(
+                "File handle permission not granted, will prompt on next save"
+              );
+              fileSystemHandle = null;
+            }
+          }
+        } catch (error) {
+          console.warn("Could not verify file handle permissions:", error);
+          fileSystemHandle = null;
+        }
+      }
+
       renderEditor(dialogElement);
     }
   } catch (error) {
@@ -1300,9 +1419,10 @@ function restoreState(dialogElement) {
   }
 }
 
-function clearState() {
+async function clearState() {
   try {
     localStorage.removeItem(STORAGE_KEY_PROJECT);
+    await clearFileHandle();
   } catch (error) {
     console.error("Failed to clear state:", error);
   }

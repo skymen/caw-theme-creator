@@ -31,7 +31,7 @@ function registerMenuButtons() {
       `,
       title: "Create a test window to try multi-window functionality.",
       text: "New Test Window",
-      appendToEnd: false,
+      appendToEnd: true,
     },
     openTestWindow
   );

@@ -160,23 +160,44 @@ function injectThemeEditorStyles(container) {
 
     .theme-editor-toolbar {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       background: ${THEME_COLORS.bgDarkest};
       border-bottom: 1px solid ${THEME_COLORS.borderDark};
       padding: 4px 8px;
+      gap: 4px;
+    }
+
+    .theme-editor-toolbar-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .theme-editor-main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .theme-editor-sidebar {
+      width: 130px;
+      background: ${THEME_COLORS.bgDarkest};
+      border-right: 1px solid ${THEME_COLORS.borderDark};
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
     }
 
     .theme-editor-tab-bar {
       display: flex;
-      overflow-x: auto;
-      flex: 1;
-      gap: 4px;
+      flex-direction: column;
+      gap: 2px;
+      padding: 4px;
     }
 
     .theme-editor-tab-btn {
-      padding: 6px 12px;
-      background: ${THEME_COLORS.bgMedium};
+      padding: 8px 12px;
+      background: transparent;
       border: none;
       color: ${THEME_COLORS.textPrimary};
       cursor: pointer;
@@ -184,18 +205,19 @@ function injectThemeEditorStyles(container) {
       white-space: nowrap;
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
+      text-align: left;
+      border-radius: 3px;
+      transition: background 0.1s;
+    }
+
+    .theme-editor-tab-btn:hover {
+      background: ${THEME_COLORS.hoverBg};
     }
 
     .theme-editor-tab-btn.active {
       background: ${THEME_COLORS.primary};
       color: ${THEME_COLORS.textOnPrimary};
-    }
-
-    .theme-editor-toolbar-actions {
-      display: flex;
-      gap: 4px;
-      margin-left: 8px;
     }
 
     .theme-editor-content {
@@ -689,20 +711,6 @@ function renderEditor(dialogElement) {
   root.innerHTML = `
     <div class="theme-editor-container">
       <div class="theme-editor-toolbar">
-        <div id="theme-editor-tab-bar" class="theme-editor-tab-bar">
-          <button class="theme-editor-tab-btn active" data-tab="info">
-            ${infoIconSvg} Info
-          </button>
-          ${currentProject.stylesheets
-            .map(
-              (file, index) => `
-            <button class="theme-editor-tab-btn" data-tab="file-${index}">
-              ${fileIconSvg} ${file.name}
-            </button>
-          `
-            )
-            .join("")}
-        </div>
         <div class="theme-editor-toolbar-actions">
           <button id="theme-editor-btn-preview" class="theme-editor-btn ${
             isPreviewEnabled
@@ -721,8 +729,26 @@ function renderEditor(dialogElement) {
           </button>
         </div>
       </div>
-      <div id="theme-editor-tab-content" class="theme-editor-content">
-        ${renderInfoTab()}
+      <div class="theme-editor-main">
+        <div class="theme-editor-sidebar">
+          <div id="theme-editor-tab-bar" class="theme-editor-tab-bar">
+            <button class="theme-editor-tab-btn active" data-tab="info">
+              ${infoIconSvg} Info
+            </button>
+            ${currentProject.stylesheets
+              .map(
+                (file, index) => `
+              <button class="theme-editor-tab-btn" data-tab="file-${index}">
+                ${fileIconSvg} ${file.name}
+              </button>
+            `
+              )
+              .join("")}
+          </div>
+        </div>
+        <div id="theme-editor-tab-content" class="theme-editor-content">
+          ${renderInfoTab()}
+        </div>
       </div>
     </div>
   `;

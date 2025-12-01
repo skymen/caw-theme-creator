@@ -35,7 +35,7 @@ const THEME_COLORS = {
   bgMedium: "var(--gray15, #787878)",
 
   // Borders
-  borderDark: "var(--gray5, #292929)",
+  borderDark: "var(--gray7, #383838)",
   borderMedium: "var(--gray9, #474747)",
   borderLight: "var(--gray11, #575757)",
 
@@ -156,7 +156,7 @@ function injectThemeEditorStyles() {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: ${THEME_COLORS.bgDark};
+      background: ${THEME_COLORS.bgDarkest};
       border-bottom: 1px solid ${THEME_COLORS.borderDark};
       padding: 4px 8px;
     }
@@ -165,13 +165,13 @@ function injectThemeEditorStyles() {
       display: flex;
       overflow-x: auto;
       flex: 1;
+      gap: 4px;
     }
 
     .theme-editor-tab-btn {
       padding: 6px 12px;
       background: ${THEME_COLORS.bgMedium};
       border: none;
-      border-right: 1px solid ${THEME_COLORS.borderDark};
       color: ${THEME_COLORS.textPrimary};
       cursor: pointer;
       font-size: 11px;
@@ -183,6 +183,7 @@ function injectThemeEditorStyles() {
 
     .theme-editor-tab-btn.active {
       background: ${THEME_COLORS.primary};
+      color: ${THEME_COLORS.textOnPrimary};
     }
 
     .theme-editor-toolbar-actions {
@@ -232,7 +233,7 @@ function injectThemeEditorStyles() {
     }
 
     .theme-editor-input {
-      width: 100%;
+      width: calc(100% - 12px);
       padding: 4px 6px;
       background: ${THEME_COLORS.inputBg};
       border: 1px solid ${THEME_COLORS.inputBorder};
@@ -242,7 +243,7 @@ function injectThemeEditorStyles() {
     }
 
     .theme-editor-textarea {
-      width: 100%;
+      width: calc(100% - 12px);
       padding: 4px 6px;
       background: ${THEME_COLORS.inputBg};
       border: 1px solid ${THEME_COLORS.inputBorder};
@@ -336,18 +337,6 @@ function injectThemeEditorStyles() {
       flex-direction: column;
     }
 
-    .theme-editor-file-header {
-      padding: 4px 8px;
-      background: ${THEME_COLORS.bgDark};
-      border-bottom: 1px solid ${THEME_COLORS.borderDark};
-    }
-
-    .theme-editor-file-header-text {
-      margin: 0;
-      color: ${THEME_COLORS.textSecondary};
-      font-size: 11px;
-    }
-
     .theme-editor-code-container {
       flex: 1;
       width: 100%;
@@ -396,10 +385,10 @@ function createInitialContent() {
     <div id="theme-editor-root" class="theme-editor-root">
       <div id="theme-editor-welcome" class="theme-editor-welcome">
         <div class="theme-editor-button-group">
-          <button id="btn-new-theme" class="theme-editor-btn theme-editor-btn-primary">
+          <button id="theme-editor-btn-new-theme" class="theme-editor-btn theme-editor-btn-primary">
             New Theme
           </button>
-          <button id="btn-open-theme" class="theme-editor-btn theme-editor-btn-secondary">
+          <button id="theme-editor-btn-open-theme" class="theme-editor-btn theme-editor-btn-secondary">
             Open .c3addon
           </button>
         </div>
@@ -419,8 +408,8 @@ function initializeThemeEditor(dialogElement) {
     const welcomeScreen = dialogElement.querySelector("#theme-editor-welcome");
 
     // Setup welcome screen buttons
-    const btnNew = dialogElement.querySelector("#btn-new-theme");
-    const btnOpen = dialogElement.querySelector("#btn-open-theme");
+    const btnNew = dialogElement.querySelector("#theme-editor-btn-new-theme");
+    const btnOpen = dialogElement.querySelector("#theme-editor-btn-open-theme");
 
     btnNew.addEventListener("click", () => showNewThemeDialog(dialogElement));
     btnOpen.addEventListener("click", () => openExistingTheme(dialogElement));
@@ -465,7 +454,7 @@ async function showNewThemeDialog(dialogElement) {
           <div class="theme-editor-template-desc">From .c3addon</div>
         </button>
       </div>
-      <button id="btn-back" class="theme-editor-btn-back">
+      <button id="theme-editor-btn-back" class="theme-editor-btn-back">
         ← Back
       </button>
     </div>
@@ -482,7 +471,7 @@ async function showNewThemeDialog(dialogElement) {
     });
   });
 
-  root.querySelector("#btn-back").addEventListener("click", () => {
+  root.querySelector("#theme-editor-btn-back").addEventListener("click", () => {
     root.innerHTML = createInitialContent();
     initializeThemeEditor(dialogElement);
   });
@@ -562,7 +551,7 @@ function renderEditor(dialogElement) {
   root.innerHTML = `
     <div class="theme-editor-container">
       <div class="theme-editor-toolbar">
-        <div id="tab-bar" class="theme-editor-tab-bar">
+        <div id="theme-editor-tab-bar" class="theme-editor-tab-bar">
           <button class="theme-editor-tab-btn active" data-tab="info">
             ${infoIconSvg} Info
           </button>
@@ -577,15 +566,15 @@ function renderEditor(dialogElement) {
             .join("")}
         </div>
         <div class="theme-editor-toolbar-actions">
-          <button id="btn-save" class="theme-editor-btn theme-editor-btn-success theme-editor-btn-small">
+          <button id="theme-editor-btn-save" class="theme-editor-btn theme-editor-btn-success theme-editor-btn-small">
             ${saveIconSvg} Save
           </button>
-          <button id="btn-close-project" class="theme-editor-btn theme-editor-btn-danger theme-editor-btn-small">
+          <button id="theme-editor-btn-close-project" class="theme-editor-btn theme-editor-btn-danger theme-editor-btn-small">
             ${closeIconSvg} Close
           </button>
         </div>
       </div>
-      <div id="tab-content" class="theme-editor-content">
+      <div id="theme-editor-tab-content" class="theme-editor-content">
         ${renderInfoTab()}
       </div>
     </div>
@@ -607,7 +596,7 @@ function renderInfoTab() {
       <div class="theme-editor-form">
         <div class="theme-editor-form-group">
           <label class="theme-editor-label">Name</label>
-          <input type="text" id="input-name" value="${
+          <input type="text" id="theme-editor-input-name" value="${
             currentProject.name
           }" class="theme-editor-input">
         </div>
@@ -615,14 +604,14 @@ function renderInfoTab() {
         <div class="theme-editor-form-row">
           <div class="theme-editor-form-group">
             <label class="theme-editor-label">Version</label>
-            <input type="text" id="input-version" value="${
+            <input type="text" id="theme-editor-input-version" value="${
               currentProject.version
             }" class="theme-editor-input">
           </div>
           
           <div class="theme-editor-form-group">
             <label class="theme-editor-label">Author</label>
-            <input type="text" id="input-author" value="${
+            <input type="text" id="theme-editor-input-author" value="${
               currentProject.author
             }" class="theme-editor-input">
           </div>
@@ -630,31 +619,31 @@ function renderInfoTab() {
         
         <div class="theme-editor-form-group">
           <label class="theme-editor-label">Website</label>
-          <input type="url" id="input-website" value="${
+          <input type="url" id="theme-editor-input-website" value="${
             currentProject.website
           }" class="theme-editor-input">
         </div>
         
         <div class="theme-editor-form-group">
           <label class="theme-editor-label">Documentation</label>
-          <input type="url" id="input-documentation" value="${
+          <input type="url" id="theme-editor-input-documentation" value="${
             currentProject.documentation
           }" class="theme-editor-input">
         </div>
         
         <div class="theme-editor-form-group">
           <label class="theme-editor-label">Description</label>
-          <textarea id="input-description" rows="2" class="theme-editor-textarea">${
+          <textarea id="theme-editor-input-description" rows="2" class="theme-editor-textarea">${
             currentProject.description
           }</textarea>
         </div>
         
         <div class="theme-editor-form-group">
           <label class="theme-editor-label">Files</label>
-          <div id="file-list" class="theme-editor-file-list">
+          <div id="theme-editor-file-list" class="theme-editor-file-list">
             ${renderFileList()}
           </div>
-          <button id="btn-add-file" class="theme-editor-btn theme-editor-btn-primary theme-editor-btn-small" style="margin-top: 4px;">
+          <button id="theme-editor-btn-add-file" class="theme-editor-btn theme-editor-btn-primary theme-editor-btn-small" style="margin-top: 4px;">
             ${addIconSvg} Add
           </button>
         </div>
@@ -682,8 +671,8 @@ function renderFileList() {
 }
 
 function setupTabHandlers(dialogElement) {
-  const tabBtns = dialogElement.querySelectorAll(".tab-btn");
-  const tabContent = dialogElement.querySelector("#tab-content");
+  const tabBtns = dialogElement.querySelectorAll(".theme-editor-tab-btn");
+  const tabContent = dialogElement.querySelector("#theme-editor-tab-content");
 
   tabBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -711,12 +700,14 @@ function setupTabHandlers(dialogElement) {
 function setupInfoTabHandlers(dialogElement) {
   // Input handlers
   const inputs = {
-    name: dialogElement.querySelector("#input-name"),
-    version: dialogElement.querySelector("#input-version"),
-    author: dialogElement.querySelector("#input-author"),
-    website: dialogElement.querySelector("#input-website"),
-    documentation: dialogElement.querySelector("#input-documentation"),
-    description: dialogElement.querySelector("#input-description"),
+    name: dialogElement.querySelector("#theme-editor-input-name"),
+    version: dialogElement.querySelector("#theme-editor-input-version"),
+    author: dialogElement.querySelector("#theme-editor-input-author"),
+    website: dialogElement.querySelector("#theme-editor-input-website"),
+    documentation: dialogElement.querySelector(
+      "#theme-editor-input-documentation"
+    ),
+    description: dialogElement.querySelector("#theme-editor-input-description"),
   };
 
   Object.entries(inputs).forEach(([key, input]) => {
@@ -752,7 +743,7 @@ function setupInfoTabHandlers(dialogElement) {
 
   // Add file button
   dialogElement
-    .querySelector("#btn-add-file")
+    .querySelector("#theme-editor-btn-add-file")
     ?.addEventListener("click", () => {
       const fileName = prompt("Enter file name:", "newfile.css");
       if (fileName) {
@@ -764,7 +755,7 @@ function setupInfoTabHandlers(dialogElement) {
 
 function setupSaveHandler(dialogElement) {
   dialogElement
-    .querySelector("#btn-save")
+    .querySelector("#theme-editor-btn-save")
     ?.addEventListener("click", async () => {
       await saveCurrentProject();
     });
@@ -774,9 +765,6 @@ function renderFileEditor(fileIndex) {
   const file = currentProject.stylesheets[fileIndex];
   return `
     <div class="theme-editor-file-editor">
-      <div class="theme-editor-file-header">
-        <div class="theme-editor-file-header-text">Editing: ${file.name}</div>
-      </div>
       <div id="code-editor-${fileIndex}" class="theme-editor-code-container"></div>
     </div>
   `;
@@ -807,7 +795,7 @@ async function saveCurrentProject() {
 
 function setupCloseProjectHandler(dialogElement) {
   dialogElement
-    .querySelector("#btn-close-project")
+    .querySelector("#theme-editor-btn-close-project")
     ?.addEventListener("click", () => {
       if (confirm("Close current project? Any unsaved changes will be lost.")) {
         closeProject(dialogElement);

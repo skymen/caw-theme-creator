@@ -597,12 +597,12 @@ async function showNewThemeDialog(dialogElement) {
         <button class="theme-editor-template-btn" data-template="dark">
           <div class="theme-editor-template-icon">${darkIconSvg}</div>
           <div class="theme-editor-template-title">Dark</div>
-          <div class="theme-editor-template-desc">3 files</div>
+          <div class="theme-editor-template-desc">Built in dark theme</div>
         </button>
         <button class="theme-editor-template-btn" data-template="light">
           <div class="theme-editor-template-icon">${lightIconSvg}</div>
           <div class="theme-editor-template-title">Light</div>
-          <div class="theme-editor-template-desc">Light mode</div>
+          <div class="theme-editor-template-desc">Built in light theme</div>
         </button>
         <button class="theme-editor-template-btn" data-template="custom">
           <div class="theme-editor-template-icon">${importIconSvg}</div>

@@ -20,6 +20,9 @@ let originalThemeStyleTags = [];
 // State persistence keys
 const STORAGE_KEY_PROJECT = "theme-editor-project";
 const STORAGE_KEY_HANDLE = "theme-editor-file-handle";
+const IDB_NAME = "theme-editor-db";
+const IDB_STORE = "file-handles";
+const IDB_VERSION = 1;
 
 // Theme Editor Color Variables
 // Customize these to change the theme editor's appearance
@@ -415,6 +418,58 @@ export function openThemeEditorDialog() {
     }
     return;
   }
+
+  // Setup message listener for save requests from popup windows
+  const handleSaveRequest = async (event) => {
+    if (event.data && event.data.type === "theme-save-request") {
+      try {
+        const { messageId, project } = event.data;
+
+        // Temporarily set the project to save
+        const previousProject = currentProject;
+        currentProject = project;
+
+        // Perform the save in the main window (has File System API access)
+        const newHandle = await saveThemeToZip(
+          currentProject,
+          fileSystemHandle
+        );
+
+        // Restore previous project
+        currentProject = previousProject;
+
+        // Update file handle if user selected a new location
+        if (newHandle) {
+          fileSystemHandle = newHandle;
+          saveState();
+        }
+
+        // Send success response back to popup
+        event.source.postMessage(
+          {
+            type: "theme-save-response",
+            messageId: messageId,
+            success: true,
+            newHandle: !!newHandle,
+          },
+          "*"
+        );
+      } catch (error) {
+        // Send error response back to popup
+        event.source.postMessage(
+          {
+            type: "theme-save-response",
+            messageId: event.data.messageId,
+            success: false,
+            error: error.message,
+          },
+          "*"
+        );
+      }
+    }
+  };
+
+  window.addEventListener("message", handleSaveRequest);
 
   // Create dialog
   const themeEditorWindow = DialogManager.createWindow({
@@ -913,11 +968,59 @@ function setupFileEditorHandlers(dialogElement, fileIndex) {
 
 async function saveCurrentProject() {
   try {
-    const newHandle = await saveThemeToZip(currentProject, fileSystemHandle);
-    // Update file handle if user selected a new location
-    if (newHandle) {
-      fileSystemHandle = newHandle;
-      saveState(); // Update state with new file handle
+    // Check if we're in a popup window
+    if (window.opener && window.opener !== window) {
+      // We're in a popup, send message to main window to handle save
+      return new Promise((resolve, reject) => {
+        const messageId = `save-theme-${Date.now()}`;
+
+        const handleResponse = (event) => {
+          if (
+            event.data &&
+            event.data.type === "theme-save-response" &&
+            event.data.messageId === messageId
+          ) {
+            window.removeEventListener("message", handleResponse);
+            if (event.data.success) {
+              // Update file handle if new one was provided
+              if (event.data.newHandle) {
+                fileSystemHandle = event.data.newHandle;
+                saveState();
+              }
+              resolve();
+            } else {
+              reject(new Error(event.data.error || "Save failed"));
+            }
+          }
+        };
+
+        window.addEventListener("message", handleResponse);
+
+        // Send save request to opener
+        window.opener.postMessage(
+          {
+            type: "theme-save-request",
+            messageId: messageId,
+            project: currentProject,
+            hasFileHandle: !!fileSystemHandle,
+          },
+          "*"
+        );
+
+        // Timeout after 30 seconds
+        setTimeout(() => {
+          window.removeEventListener("message", handleResponse);
+          reject(new Error("Save request timed out"));
+        }, 30000);
+      });
+    } else {
+      // We're in the main window, do normal save
+      const newHandle = await saveThemeToZip(currentProject, fileSystemHandle);
+      // Update file handle if user selected a new location
+      if (newHandle) {
+        fileSystemHandle = newHandle;
+        saveState(); // Update state with new file handle
+      }
     }
   } catch (error) {
     console.error("Error saving theme:", error);

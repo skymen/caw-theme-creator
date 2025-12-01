@@ -382,6 +382,27 @@ export function openThemeEditorDialog() {
       // Save state when closing
       saveState();
     },
+    onPopout: (windowData, popupWindow) => {
+      console.log("Window popped out to browser:", windowData.title);
+      // Reinitialize the current tab after popout
+      const dialogElement = popupWindow.document.querySelector(
+        '[data-window-id="theme-editor"]'
+      );
+      if (dialogElement && currentProject) {
+        setTimeout(() => reinitializeCurrentTab(dialogElement), 100);
+      }
+    },
+    onPopupClose: (windowData) => {
+      console.log("Popup window closed:", windowData.title);
+      // Window is being moved back to the editor
+      // Reinitialize the current tab after moving back
+      const dialogElement = windowData.element.querySelector(
+        '[data-window-id="theme-editor"]'
+      );
+      if (dialogElement && currentProject) {
+        setTimeout(() => reinitializeCurrentTab(dialogElement), 100);
+      }
+    },
   });
   injectThemeEditorStyles(themeEditorWindow.element);
 }
@@ -707,6 +728,24 @@ function setupTabHandlers(dialogElement) {
   });
 
   setupInfoTabHandlers(dialogElement);
+}
+
+function reinitializeCurrentTab(dialogElement) {
+  if (!currentProject) return;
+
+  const tabContent = dialogElement.querySelector("#theme-editor-tab-content");
+  if (!tabContent) return;
+
+  // Reinitialize based on current tab
+  if (currentTab === "info") {
+    setupInfoTabHandlers(dialogElement);
+  } else {
+    // Current tab is a file editor
+    const fileIndex = parseInt(currentTab.split("-")[1]);
+    if (!isNaN(fileIndex) && currentProject.stylesheets[fileIndex]) {
+      setupFileEditorHandlers(dialogElement, fileIndex);
+    }
+  }
 }
 
 function setupInfoTabHandlers(dialogElement) {

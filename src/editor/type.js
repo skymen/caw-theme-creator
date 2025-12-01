@@ -23,19 +23,19 @@ function registerMenuButtons() {
   );
 
   // Register the Test Window menu item
-  addButtonToMenu(
-    {
-      id: "test-window-button",
-      svg: `
-        <path d="M0 0h24v24H0z" fill="none"/>
-        <path d="M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H5V8h14v10z"/>
-      `,
-      title: "Create a test window to try multi-window functionality.",
-      text: "New Test Window",
-      appendToEnd: true,
-    },
-    openTestWindow
-  );
+  // addButtonToMenu(
+  //   {
+  //     id: "test-window-button",
+  //     svg: `
+  //       <path d="M0 0h24v24H0z" fill="none"/>
+  //       <path d="M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H5V8h14v10z"/>
+  //     `,
+  //     title: "Create a test window to try multi-window functionality.",
+  //     text: "New Test Window",
+  //     appendToEnd: true,
+  //   },
+  //   openTestWindow
+  // );
 }
 
 function dialogManagerIsAvailable() {
@@ -46,11 +46,14 @@ function openThemeEditorDialog() {
   if (!dialogManagerIsAvailable()) {
     if (
       confirm(
-        "The Theme Editor requires the Editor Window Manager to be available. Open download page?"
+        "The Theme Editor requires the 'Editor Window Manager' addon to function.\n\n" +
+          "Would you like to visit the GitHub page to install it?"
       )
     ) {
-      // open the link to install Editor Window Manager: https://github.com/skymen/editor-window-manager
-      window.open("https://github.com/skymen/editor-window-manager", "_blank");
+      window.open(
+        "https://github.com/skymen/editor-window-manager/tree/main?tab=readme-ov-file",
+        "_blank"
+      );
     }
     return;
   }
@@ -64,10 +67,14 @@ function openTestWindow() {
   if (!dialogManagerIsAvailable()) {
     if (
       confirm(
-        "The Test Window requires the Editor Window Manager to be available. Open download page?"
+        "The Theme Editor requires the 'Editor Window Manager' addon to function.\n\n" +
+          "Would you like to visit the GitHub page to install it?"
       )
     ) {
-      window.open("https://github.com/skymen/editor-window-manager", "_blank");
+      window.open(
+        "https://github.com/skymen/editor-window-manager/tree/main?tab=readme-ov-file",
+        "_blank"
+      );
     }
     return;
   }

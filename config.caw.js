@@ -41,7 +41,7 @@ export const info = {
   Set: {
     // COMMON to all
     CanBeBundled: false,
-    IsDeprecated: false,
+    IsDeprecated: true,
     GooglePlayServicesEnabled: false,
 
     // BEHAVIOR only

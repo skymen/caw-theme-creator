@@ -12,8 +12,10 @@ export const name = "CAW Theme Creator";
 export const version = _version;
 export const minConstructVersion = undefined;
 export const author = "skymen";
-export const website = "https://www.construct.net";
-export const documentation = "https://www.construct.net";
+export const website =
+  "https://www.construct.net/en/make-games/addons/1533/caw-theme-creator";
+export const documentation =
+  "https://github.com/skymen/caw-theme-creator/blob/main/docs/GETTING_STARTED.md";
 export const description = "Description";
 export const category = ADDON_CATEGORY.GENERAL;
 

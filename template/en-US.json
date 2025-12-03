@@ -6,7 +6,7 @@
       "caw_theme_creator": {
         "name": "CAW Theme Creator",
         "description": "Description",
-        "help-url": "https://www.construct.net",
+        "help-url": "https://github.com/skymen/caw-theme-creator/blob/main/docs/GETTING_STARTED.md",
         "aceCategories": {},
         "properties": {},
         "actions": {},

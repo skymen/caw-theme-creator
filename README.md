@@ -1,4 +1,4 @@
-<img src="./src/icon.svg" width="100" /><br>
+<img src="./examples/cover.png" width="150" /><br>
 # CAW Theme Creator
 <i>Description</i> <br>
 ### Version 1.3.0.5
@@ -38,6 +38,8 @@ npm run dev
 ```
 
 ## Examples Files
+| Description | Download |
+| --- | --- |
 
 ---
 ## Properties

@@ -47,11 +47,11 @@ function openThemeEditorDialog() {
     if (
       confirm(
         "The Theme Editor requires the 'Editor Window Manager' addon to function.\n\n" +
-          "Would you like to visit the GitHub page to install it?"
+          "Would you like to visit the addon page to install it?"
       )
     ) {
       window.open(
-        "https://github.com/skymen/editor-window-manager/tree/main?tab=readme-ov-file",
+        "https://www.construct.net/en/make-games/addons/1534/editor-window-manager",
         "_blank"
       );
     }
@@ -68,11 +68,11 @@ function openTestWindow() {
     if (
       confirm(
         "The Theme Editor requires the 'Editor Window Manager' addon to function.\n\n" +
-          "Would you like to visit the GitHub page to install it?"
+          "Would you like to visit the addon page to install it?"
       )
     ) {
       window.open(
-        "https://github.com/skymen/editor-window-manager/tree/main?tab=readme-ov-file",
+        "https://www.construct.net/en/make-games/addons/1534/editor-window-manager",
         "_blank"
       );
     }
